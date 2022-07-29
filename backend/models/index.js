@@ -15,7 +15,7 @@ const connectionString = `postgres://${PG_USER}:${PG_PASSWORD}@${PG_HOST}:${PG_P
 
 const sequelize = new Sequelize((isProduction ? DATABASE_URL : connectionString), {
     dialectOptions: {
-        ssl: isProduction,
+        ssl: isProduction ? { rejectUnauthorized: false } : false,
     },
 });
 
