@@ -22,7 +22,6 @@ Promise.all([
     const campaignsLookup = {};
     const lineItems = [];
 
-
     rawData.forEach((data) => {
         lineItems.push({
             id: data['id'],

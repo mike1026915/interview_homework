@@ -6,21 +6,18 @@ const {
     PG_HOST,
     PG_PORT,
     PG_DATABASE,
-    NODE_ENV,
+    DATABASE_URL,
 } = process.env;
 
-console.log(process.env)
+const isProduction = process.env.NODE_ENV === "production";
 
-console.log({
-    PG_USER,
-    PG_PASSWORD,
-    PG_HOST,
-    PG_PORT,
-    PG_DATABASE,
-    NODE_ENV,
-})
+const connectionString = `postgres://${PG_USER}:${PG_PASSWORD}@${PG_HOST}:${PG_PORT}/${PG_DATABASE}`
 
-const sequelize = new Sequelize(`postgres://${PG_USER}:${PG_PASSWORD}@${PG_HOST}:${PG_PORT}/${PG_DATABASE}`);
+const sequelize = new Sequelize((isProduction ? DATABASE_URL : connectionString), {
+    dialectOptions: {
+        ssl: isProduction,
+    },
+});
 
 const campaign = require('./Campaign')
 const comment = require('./Comment')
