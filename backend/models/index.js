@@ -1,22 +1,8 @@
-require('dotenv').config({path: '../.env'});
 const { Sequelize, DataTypes } = require('sequelize');
-const {
-    PG_USER,
-    PG_PASSWORD,
-    PG_HOST,
-    PG_PORT,
-    PG_DATABASE,
-    DATABASE_URL,
-} = process.env;
 
-const isProduction = process.env.NODE_ENV === "production";
-
-const connectionString = `postgres://${PG_USER}:${PG_PASSWORD}@${PG_HOST}:${PG_PORT}/${PG_DATABASE}`
-
-const sequelize = new Sequelize((isProduction ? DATABASE_URL : connectionString), {
-    dialectOptions: {
-        ssl: isProduction ? { rejectUnauthorized: false } : false,
-    },
+const sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: '../database.sqlite'
 });
 
 const campaign = require('./Campaign')
