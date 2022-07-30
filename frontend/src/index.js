@@ -8,10 +8,12 @@ import App from './components/App';
 import reportWebVitals from './reportWebVitals';
 
 import campaignReducer from './features/campaignSlice';
+import lineItemSlice from './features/lineItemSlice';
 
 const store = configureStore({
     reducer: {
         campaign: campaignReducer,
+        lineItem: lineItemSlice,
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
 })

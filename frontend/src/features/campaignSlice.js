@@ -1,11 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { getCampaigns } from '../apis/campaignApi';
 
-export const fetchCampaigns = createAsyncThunk('campaign/receiveCampaigns', async () => {
-    const response = await fetch('http://localhost:3000/campaigns')
-    const data = await response.text();
-
-    return data;
-})
+export const fetchCampaigns = createAsyncThunk('campaign/getCampaigns', getCampaigns);
 
 export const campaignSlice = createSlice({
     name: 'campaign',
