@@ -8,6 +8,14 @@ module.exports = function(sequelize, DataTypes) {
         name: {
             type: DataTypes.STRING,
         },
+        isReviewed: {
+            defaultValue: false,
+            type: DataTypes.BOOLEAN,
+        },
+        isArchived: {
+            defaultValue: false,
+            type: DataTypes.BOOLEAN,
+        },
     });
 
     return Campaign;

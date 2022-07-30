@@ -25,6 +25,14 @@ module.exports = function(sequelize, DataTypes) {
             allowNull: false,
             type: DataTypes.BIGINT,
         },
+        isReviewed: {
+            defaultValue: false,
+            type: DataTypes.BOOLEAN,
+        },
+        isArchived: {
+            defaultValue: false,
+            type: DataTypes.BOOLEAN,
+        },
     });
 
     return LineItem;
