@@ -10,12 +10,16 @@ import reportWebVitals from './reportWebVitals';
 import campaignReducer from './features/campaignSlice';
 import lineItemSlice from './features/lineItemSlice';
 
+import { IS_PRODUCTION } from './constants';
+
 const store = configureStore({
     reducer: {
         campaign: campaignReducer,
         lineItem: lineItemSlice,
     },
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
+    middleware: (getDefaultMiddleware) => {
+        return IS_PRODUCTION ? getDefaultMiddleware() : getDefaultMiddleware().concat(logger);
+    },
 })
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
