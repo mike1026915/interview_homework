@@ -15,9 +15,23 @@ const Comment = comment(sequelize, DataTypes);
 const Invoice = invoice(sequelize, DataTypes);
 const LineItem = lineItem(sequelize, DataTypes);
 
+LineItem.belongsTo(Campaign, {
+    foreignKey: 'campaignId',
+    sourceKey: 'id',
+});
+LineItem.hasMany(Comment, {
+    foreignKey: 'itemId',
+    sourceKey: 'id',
+});
+Invoice.belongsTo(Campaign, {
+    foreignKey: 'campaignId',
+    sourceKey: 'id',
+})
+
 module.exports = {
     Campaign,
     Comment,
     Invoice,
-    LineItem
+    LineItem,
+    sequelize
 };

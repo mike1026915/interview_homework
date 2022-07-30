@@ -25,6 +25,7 @@ Promise.all([
     rawData.forEach((data) => {
         lineItems.push({
             id: data['id'],
+            campaignId: data['campaign_id'],
             name: data['line_item_name'],
             bookedAmount: data['booked_amount'], //precision issue
             actualAmount:data['actual_amount'],
@@ -35,14 +36,14 @@ Promise.all([
             id: data['campaign_id'],
             name: data['campaign_name'],
         }
-    })
+    });
 
-    Promise.all(lineItems.map((item) => {
-        return LineItem.create(item);
-    })).then(() => {
-        return Promise.all(Object.values(campaignsLookup).map((campaign) => {
-            return Campaign.create(campaign);
-        }));
+    Promise.all(Object.values(campaignsLookup).map((campaign) => {
+        return Campaign.create(campaign);
+    })).then(()=> {
+        return Promise.all(lineItems.map((item) => {
+            return LineItem.create(item);
+        }))
     }).then(() => {
         console.log('Insert data done!')
     });

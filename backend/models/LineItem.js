@@ -11,16 +11,20 @@ module.exports = function(sequelize, DataTypes) {
         },
         bookedAmount: {
             allowNull: false,
-            type: DataTypes.DECIMAL(50, 25),
+            type: DataTypes.DOUBLE,
         },
         actualAmount: {
             allowNull: false,
-            type: DataTypes.DECIMAL(50, 25),
+            type: DataTypes.DOUBLE,
         },
         adjustment: {
             allowNull: false,
-            type: DataTypes.DECIMAL(50, 25),
-        }
+            type: DataTypes.DOUBLE,
+        },
+        campaignId: {
+            allowNull: false,
+            type: DataTypes.BIGINT,
+        },
     });
 
     return LineItem;
