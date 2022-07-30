@@ -33,6 +33,12 @@ module.exports = function(sequelize, DataTypes) {
             defaultValue: false,
             type: DataTypes.BOOLEAN,
         },
+    }, {
+        indexes: [
+            {
+                fields: ['campaignId'],
+            },
+        ],
     });
 
     return LineItem;

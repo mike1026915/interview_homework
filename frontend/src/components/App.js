@@ -5,6 +5,7 @@ import { ThemeProvider } from '@mui/material/styles';
 
 import CampaignPage from './pages/CampaignPage.react';
 import InvoicePage from './pages/InvoicePage.react';
+import LineItemPage from './pages/LineItemPage.react';
 
 import theme from '../theme/Theme';
 
@@ -15,6 +16,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<CampaignPage/>} />
                     <Route path="/campaigns" element={<CampaignPage/>} />
+                    <Route path="/line-items/:id" element={<LineItemPage/>} />
                     <Route path="/invoices" exact element={<InvoicePage/>} />
                 </Routes>
             </BrowserRouter>

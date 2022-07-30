@@ -65,10 +65,28 @@ const headCells = [
         label: 'Name',
     },
     {
-        id: 'total',
+        id: 'bookedAmount',
         numeric: true,
         disablePadding: false,
-        label: 'Total',
+        label: 'Booked Amount',
+    },
+    {
+        id: 'actualAmount',
+        numeric: true,
+        disablePadding: false,
+        label: 'Actual Amount',
+    },
+    {
+        id: 'adjustment',
+        numeric: true,
+        disablePadding: false,
+        label: 'Adjustment',
+    },
+    {
+        id: 'billableAmount',
+        numeric: true,
+        disablePadding: false,
+        label: 'Billable Amount',
     },
 ];
 
@@ -129,7 +147,7 @@ EnhancedTableHead.propTypes = {
 };
 
 const EnhancedTableToolbar = (props) => {
-    const { numSelected } = props;
+    const { numSelected, campaignName } = props;
 
     return (
         <Toolbar
@@ -158,7 +176,7 @@ const EnhancedTableToolbar = (props) => {
                 id="tableTitle"
                 component="div"
             >
-                Campaign
+                Line-items of {campaignName}
             </Typography>
         )}
 
@@ -184,7 +202,7 @@ EnhancedTableToolbar.propTypes = {
     numSelected: PropTypes.number.isRequired,
 };
 
-export default function EnhancedTable() {
+export default function EnhancedTable({ campaignId }) {
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('name');
     const [selected, setSelected] = useState([]);
@@ -192,7 +210,8 @@ export default function EnhancedTable() {
     const [dense, setDense] = useState(false);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    const rows = Object.values(useSelector((state) => (state.campaign.campaignLookup)));
+    const rows = useSelector((state) => (state.lineItem.items));
+    const campaignName = useSelector((state) => (state.campaign.campaignLookup?.[campaignId]?.name));
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -253,7 +272,10 @@ export default function EnhancedTable() {
     return (
         <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 2 }}>
-            <EnhancedTableToolbar numSelected={selected.length} />
+            <EnhancedTableToolbar
+                numSelected={selected.length}
+                campaignName={campaignName}
+            />
             <TableContainer>
             <Table
                 sx={{ minWidth: 750 }}
@@ -300,16 +322,12 @@ export default function EnhancedTable() {
                                 scope="row"
                                 padding="none"
                             >
-                                <Tooltip title="Click to view line-items" arrow>
-                                    <Link
-                                        to={`/line-items/${row.id}`}
-                                    >
-                                        {row.name}
-                                    </Link>
-                                </Tooltip>
-
+                                {row.name}
                             </TableCell>
-                            <TableCell align="left">{row.total}</TableCell>
+                            <TableCell align="left">{row.bookedAmount}</TableCell>
+                            <TableCell align="left">{row.actualAmount}</TableCell>
+                            <TableCell align="left">{row.adjustment}</TableCell>
+                            <TableCell align="left">{row.actualAmount + row.adjustment}</TableCell>
                             </TableRow>
                         );
                     })}

@@ -21,7 +21,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '..', 'frontend', 'build')));
 
 app.use('/', indexRouter);
-app.use('/items', LineItemRoute);
+app.use('/line-items', LineItemRoute);
 app.use('/campaigns', CampaignRoute);
 
 // catch 404 and forward to error handler

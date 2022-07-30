@@ -7,7 +7,6 @@ const {
 
 const router = express.Router();
 
-/* GET users listing. */
 router.get('/', async function(req, res, next) {
     try {
         const campaigns = await Campaign.findAll();
@@ -31,7 +30,23 @@ router.get('/', async function(req, res, next) {
 
         next(err);
     }
+});
 
+router.get('/:id', async function(req, res, next) {
+    try {
+        const id = req.params.id;
+        const campaign = await Campaign.findAll({
+            where: {
+                id,
+            }
+        });
+
+        res.status(200).json(campaign);
+    } catch (err) {
+        console.error(err);
+
+        next(err);
+    }
 });
 
 module.exports = router;
