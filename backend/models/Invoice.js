@@ -13,7 +13,7 @@ module.exports = function(sequelize, DataTypes) {
         total: {
             allowNull: false,
             type: DataTypes.DOUBLE,
-        }
+        },
     });
 
     return Invoice;

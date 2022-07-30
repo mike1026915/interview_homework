@@ -1,6 +1,6 @@
 const express = require('express');
 const {
-    LineItem
+    Campaign
 } = require('../models');
 
 const router = express.Router();
@@ -8,7 +8,7 @@ const router = express.Router();
 /* GET users listing. */
 router.get('/', async function(req, res, next) {
     try {
-        const result = await LineItem.findAll();
+        const result = await Campaign.findAll();
 
         res.status(200).json(result);
     } catch (err) {

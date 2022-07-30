@@ -14,7 +14,7 @@ module.exports = function(sequelize, DataTypes) {
         itemId: {
             allowNull: false,
             type: DataTypes.BIGINT,
-        }
+        },
     });
 
     return Comment;

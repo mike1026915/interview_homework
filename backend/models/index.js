@@ -1,8 +1,12 @@
+const path = require('path');
 const { Sequelize, DataTypes } = require('sequelize');
 
 const sequelize = new Sequelize({
     dialect: 'sqlite',
-    storage: '../database.sqlite'
+    storage: path.join(__dirname, '..', 'database.sqlite'),
+    define: {
+        freezeTableName: true
+    }
 });
 
 const campaign = require('./Campaign')
