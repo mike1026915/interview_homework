@@ -1,4 +1,6 @@
 import React, { useState, useCallback } from "react";
+import { Link } from 'react-router-dom';
+
 import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -10,6 +12,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Typography from '@mui/material/Typography';
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
+
 
 function ElevationScroll(props) {
     const { children } = props;
@@ -27,7 +30,7 @@ ElevationScroll.propTypes = {
     children: PropTypes.element.isRequired,
 };
 
-const pages = ['Campaigns', 'Invoices'];
+const pages = ['campaigns', 'invoices'];
 
 export default function Header(props) {
     const [anchorElNav, setAnchorElNav] = useState(null);
@@ -51,15 +54,15 @@ export default function Header(props) {
                             href="/"
                             sx={{
                                 mr: 2,
-                                display: { xs: "none", md: "flex" },
-                                letterSpacing: ".05rem",
-                                color: "inherit",
-                                textDecoration: "none"
+                                display: { xs: 'none', md: 'flex' },
+                                letterSpacing: '.05rem',
+                                color: 'inherit',
+                                textDecoration: 'none'
                             }}
                         >
                             Campaign Invoice System
                         </Typography>
-                        <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+                        <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
                             <IconButton
                                 size="large"
                                 aria-label="account of current user"
@@ -90,8 +93,20 @@ export default function Header(props) {
                             >
                                 {pages.map((page) => (
                                     <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                        <Typography textAlign="center">
-                                            {page}
+                                        <Typography
+                                            textAlign="center"
+                                            sx={{
+                                                textTransform: 'capitalize',
+                                                textDecoration: 'none',
+                                                color: 'inherit',
+                                            }}
+                                        >
+                                            <Link style={{
+                                                textDecoration: 'none',
+                                                color: 'inherit',
+                                            }} to={`/${page}`}>
+                                                {page}
+                                            </Link>
                                         </Typography>
                                     </MenuItem>
                                 ))}
@@ -119,7 +134,12 @@ export default function Header(props) {
                                 onClick={handleCloseNavMenu}
                                 sx={{ my: 2, color: "white", display: "block" }}
                             >
-                                {page}
+                                <Link style={{
+                                    textDecoration: 'none',
+                                    color: 'inherit',
+                                }} to={`/${page}`}>
+                                    {page}
+                                </Link>
                             </Button>
                             ))}
                         </Box>

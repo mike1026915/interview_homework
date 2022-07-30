@@ -1,26 +1,23 @@
-import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux'
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
 import { ThemeProvider } from '@mui/material/styles';
 
-import { fetchCampaigns } from '../features/campaignSlice';
-import { fetchLineItems } from '../features/lineItemSlice';
+import CampaignPage from './pages/CampaignPage.react';
+import InvoicePage from './pages/InvoicePage.react';
 
 import theme from '../theme/Theme';
-import Header from './Header.react'
 
 function App() {
-    const dispatch = useDispatch()
-    const campaigns = useSelector(state => state.campaign.campaigns)
-
-    useEffect(() => {
-        dispatch(fetchCampaigns());
-        dispatch(fetchLineItems());
-    }, [dispatch]);
-
     return (
         <ThemeProvider theme={theme}r>
-            <Header />
-            {String(campaigns)}
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<CampaignPage/>} />
+                    <Route path="/campaigns" element={<CampaignPage/>} />
+                    <Route path="/invoices" exact element={<InvoicePage/>} />
+                </Routes>
+            </BrowserRouter>
         </ThemeProvider>
     );
 }
