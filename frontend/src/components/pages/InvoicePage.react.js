@@ -1,16 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useDispatch } from 'react-redux'
 
 import Header from '../Header.react';
-import CampaignDataTable from '../CampaignDataTable.react';
+import InvoiceDataTable from '../InvoiceDataTable.react';
 
-const CampaignPage = () => {
+import { getInvoices } from '../../features/invoiceSlice';
+
+const InvoicePage = () => {
+    const dispatch = useDispatch()
+    const [selected, setSelected] = useState([]);
+
+    useEffect(() => {
+        dispatch(getInvoices());
+    }, [dispatch])
+
+    const handleSelected = useCallback((s) => {
+        setSelected(s);
+    }, [])
+
     return (
         <>
             <Header />
-            <h1> Invoices </h1>
-            <CampaignDataTable />
+            <InvoiceDataTable
+                selected={selected}
+                setSelected={handleSelected}
+            />
         </>
     )
 }
 
-export default CampaignPage;
+export default InvoicePage;

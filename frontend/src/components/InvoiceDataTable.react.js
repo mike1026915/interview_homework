@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux'
+
+import { Link } from 'react-router-dom';
 
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -64,28 +66,16 @@ const headCells = [
         label: 'Name',
     },
     {
-        id: 'bookedAmount',
+        id: 'total',
         numeric: true,
         disablePadding: false,
-        label: 'Booked Amount',
+        label: 'Total',
     },
     {
-        id: 'actualAmount',
-        numeric: true,
+        id: 'createAt',
+        numeric: false,
         disablePadding: false,
-        label: 'Actual Amount',
-    },
-    {
-        id: 'adjustment',
-        numeric: true,
-        disablePadding: false,
-        label: 'Adjustment',
-    },
-    {
-        id: 'billableAmount',
-        numeric: true,
-        disablePadding: false,
-        label: 'Billable Amount',
+        label: 'Create Time',
     },
 ];
 
@@ -146,7 +136,7 @@ EnhancedTableHead.propTypes = {
 };
 
 const EnhancedTableToolbar = (props) => {
-    const { numSelected, campaignName } = props;
+    const { numSelected, onInvoiceCreate } = props;
 
     return (
         <Toolbar
@@ -175,16 +165,21 @@ const EnhancedTableToolbar = (props) => {
                 id="tableTitle"
                 component="div"
             >
-                Line-items of {campaignName}
+                Invoice
             </Typography>
         )}
 
-        {/* TODO: // handle ion */}
         {numSelected > 0 ? (
             <ButtonGroup variant="outlined" aria-label="outlined button group">
-                <Button>One</Button>
-                <Button>Two</Button>
-                <Button>Three</Button>
+                <Button
+                    size="small"
+                    sx={{
+                        whiteSpace: 'nowrap',
+                    }}
+                    onClick={onInvoiceCreate}
+                >
+                    Create Invoices
+                </Button>
             </ButtonGroup>
         ) : (
             <Tooltip title="Filter list">
@@ -199,46 +194,47 @@ const EnhancedTableToolbar = (props) => {
 
 EnhancedTableToolbar.propTypes = {
     numSelected: PropTypes.number.isRequired,
-    campaignName: PropTypes.string,
+    onInvoiceCreate: PropTypes.func,
 };
 
-export default function EnhancedTable({ campaignId }) {
+export default function EnhancedTable({
+    onCreateInvoiceClick,
+    selected,
+    setSelected,
+}) {
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('name');
-    const [selected, setSelected] = useState([]);
     const [page, setPage] = useState(0);
     const [dense, setDense] = useState(false);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    const isItemLoading = useSelector((state) => (state.lineItem.isItemLoading));
+    const isLoading = useSelector((state) => (state.invoice.isInvoicesLoading));
+    const invoices = Object.values(useSelector((state) => (state.invoice.invoiceLookup)));
+    const rows = useMemo(() => (isLoading ? [] : invoices), [isLoading, invoices]);
 
-    const lineItems = useSelector((state) => (state.lineItem.items));
-    const rows = isItemLoading ? [] : lineItems;
-    const campaignName = useSelector((state) => (state.campaign.campaignLookup?.[campaignId]?.name));
-
-    const handleRequestSort = (event, property) => {
+    const handleRequestSort = useCallback((event, property) => {
         const isAsc = orderBy === property && order === 'asc';
 
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
-    };
+    }, [order, orderBy]);
 
-    const handleSelectAllClick = (event) => {
+    const handleSelectAllClick = useCallback((event) => {
         if (event.target.checked) {
-            const newSelecteds = rows.map((n) => n.name);
+            const newSelecteds = rows.map((n) => n.id);
 
             setSelected(newSelecteds);
             return;
         }
         setSelected([]);
-    };
+    }, [rows, setSelected]);
 
-    const handleClick = (event, name) => {
-        const selectedIndex = selected.indexOf(name);
+    const handleClick = useCallback((event, id) => {
+        const selectedIndex = selected.indexOf(id);
         let newSelected = [];
 
         if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
+            newSelected = newSelected.concat(selected, id);
         } else if (selectedIndex === 0) {
             newSelected = newSelected.concat(selected.slice(1));
         } else if (selectedIndex === selected.length - 1) {
@@ -251,33 +247,38 @@ export default function EnhancedTable({ campaignId }) {
         }
 
         setSelected(newSelected);
-    };
+    }, [selected, setSelected]);
 
-    const handleChangePage = (event, newPage) => {
+    const handleChangePage = useCallback((event, newPage) => {
         setPage(newPage);
-    };
+    }, []);
 
-    const handleChangeRowsPerPage = (event) => {
+    const handleChangeRowsPerPage = useCallback((event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
-    };
+    }, []);
 
-    const handleChangeDense = (event) => {
+    const handleChangeDense = useCallback((event) => {
         setDense(event.target.checked);
-    };
+    }, []);
 
-    const isSelected = (name) => selected.indexOf(name) !== -1;
+    const isSelected = (id) => selected.indexOf(id) !== -1;
 
         // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+
+
+    const handleInvoiceCreate = useCallback(() => {
+        onCreateInvoiceClick()
+    }, [onCreateInvoiceClick]);
 
     return (
         <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 2 }}>
             <EnhancedTableToolbar
                 numSelected={selected.length}
-                campaignName={campaignName}
+                onInvoiceCreate={handleInvoiceCreate}
             />
             <TableContainer>
             <Table
@@ -297,17 +298,17 @@ export default function EnhancedTable({ campaignId }) {
                 {stableSort(rows, getComparator(order, orderBy))
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row, index) => {
-                        const isItemSelected = isSelected(row.name);
+                        const isItemSelected = isSelected(row.id);
                         const labelId = `enhanced-table-checkbox-${index}`;
 
                         return (
                             <TableRow
                                 hover
-                                onClick={(event) => handleClick(event, row.name)}
+                                onClick={(event) => handleClick(event, row.id)}
                                 role="checkbox"
                                 aria-checked={isItemSelected}
                                 tabIndex={-1}
-                                key={row.name}
+                                key={row.name+row.id}
                                 selected={isItemSelected}
                             >
                             <TableCell padding="checkbox">
@@ -325,12 +326,17 @@ export default function EnhancedTable({ campaignId }) {
                                 scope="row"
                                 padding="none"
                             >
-                                {row.name}
+                                <Tooltip title="Click to view line-items" arrow>
+                                    <Link
+                                        to={`/line-items/${row.id}`}
+                                    >
+                                        {row.name}
+                                    </Link>
+                                </Tooltip>
+
                             </TableCell>
-                            <TableCell align="left">{row.bookedAmount}</TableCell>
-                            <TableCell align="left">{row.actualAmount}</TableCell>
-                            <TableCell align="left">{row.adjustment}</TableCell>
-                            <TableCell align="left">{row.actualAmount + row.adjustment}</TableCell>
+                            <TableCell align="left">{row.total}</TableCell>
+                            <TableCell align="left">{new Date(row.createdAt).toLocaleString()}</TableCell>
                             </TableRow>
                         );
                     })}

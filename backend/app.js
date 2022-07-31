@@ -9,6 +9,7 @@ const cors = require('cors')
 const indexRouter = require('./routes/index');
 const LineItemRoute = require('./routes/LineItemRoute');
 const CampaignRoute = require('./routes/CampaignRoute');
+const InvoiceRoute = require('./routes/InvoiceRoute');
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(express.static(path.join(__dirname, '..', 'frontend', 'build')));
 app.use('/', indexRouter);
 app.use('/line-items', LineItemRoute);
 app.use('/campaigns', CampaignRoute);
+app.use('/invoices', InvoiceRoute);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

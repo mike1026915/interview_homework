@@ -9,6 +9,7 @@ import reportWebVitals from './reportWebVitals';
 
 import campaignReducer from './features/campaignSlice';
 import lineItemSlice from './features/lineItemSlice';
+import invoiceSlice from './features/invoiceSlice';
 
 import { IS_PRODUCTION } from './constants';
 
@@ -16,6 +17,7 @@ const store = configureStore({
     reducer: {
         campaign: campaignReducer,
         lineItem: lineItemSlice,
+        invoice: invoiceSlice,
     },
     middleware: (getDefaultMiddleware) => {
         return IS_PRODUCTION ? getDefaultMiddleware() : getDefaultMiddleware().concat(logger);

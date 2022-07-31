@@ -6,7 +6,12 @@ module.exports = function(sequelize, DataTypes) {
             type: DataTypes.BIGINT,
         },
         name: {
+            allowNull: false,
             type: DataTypes.STRING,
+        },
+        isInvoiceCreated: {
+            defaultValue: false,
+            type: DataTypes.BOOLEAN,
         },
         isReviewed: {
             defaultValue: false,

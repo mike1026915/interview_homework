@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux'
 
@@ -22,7 +22,8 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import DeleteIcon from '@mui/icons-material/Delete';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 
@@ -129,7 +130,7 @@ EnhancedTableHead.propTypes = {
 };
 
 const EnhancedTableToolbar = (props) => {
-    const { numSelected } = props;
+    const { numSelected, onInvoiceCreate } = props;
 
     return (
         <Toolbar
@@ -162,13 +163,18 @@ const EnhancedTableToolbar = (props) => {
             </Typography>
         )}
 
-        {/* TODO: // handle ion */}
         {numSelected > 0 ? (
-            <Tooltip title="Delete">
-            <IconButton>
-                <DeleteIcon />
-            </IconButton>
-            </Tooltip>
+            <ButtonGroup variant="outlined" aria-label="outlined button group">
+                <Button
+                    size="small"
+                    sx={{
+                        whiteSpace: 'nowrap',
+                    }}
+                    onClick={onInvoiceCreate}
+                >
+                    Create Invoices
+                </Button>
+            </ButtonGroup>
         ) : (
             <Tooltip title="Filter list">
             <IconButton>
@@ -182,44 +188,47 @@ const EnhancedTableToolbar = (props) => {
 
 EnhancedTableToolbar.propTypes = {
     numSelected: PropTypes.number.isRequired,
+    onInvoiceCreate: PropTypes.func,
 };
 
-export default function EnhancedTable() {
+export default function EnhancedTable({
+    onCreateInvoiceClick,
+    selected,
+    setSelected,
+}) {
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('name');
-    const [selected, setSelected] = useState([]);
     const [page, setPage] = useState(0);
     const [dense, setDense] = useState(false);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const isLoading = useSelector((state) => (state.campaign.isCampaignLoading));
     const campaigns = Object.values(useSelector((state) => (state.campaign.campaignLookup)));
-    const rows = isLoading ? [] : campaigns;
+    const rows = useMemo(() => (isLoading ? [] : campaigns), [isLoading, campaigns]);
 
-
-    const handleRequestSort = (event, property) => {
+    const handleRequestSort = useCallback((event, property) => {
         const isAsc = orderBy === property && order === 'asc';
 
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
-    };
+    }, [order, orderBy]);
 
-    const handleSelectAllClick = (event) => {
+    const handleSelectAllClick = useCallback((event) => {
         if (event.target.checked) {
-            const newSelecteds = rows.map((n) => n.name);
+            const newSelecteds = rows.map((n) => n.id);
 
             setSelected(newSelecteds);
             return;
         }
         setSelected([]);
-    };
+    }, [rows, setSelected]);
 
-    const handleClick = (event, name) => {
-        const selectedIndex = selected.indexOf(name);
+    const handleClick = useCallback((event, id) => {
+        const selectedIndex = selected.indexOf(id);
         let newSelected = [];
 
         if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
+            newSelected = newSelected.concat(selected, id);
         } else if (selectedIndex === 0) {
             newSelected = newSelected.concat(selected.slice(1));
         } else if (selectedIndex === selected.length - 1) {
@@ -232,31 +241,39 @@ export default function EnhancedTable() {
         }
 
         setSelected(newSelected);
-    };
+    }, [selected, setSelected]);
 
-    const handleChangePage = (event, newPage) => {
+    const handleChangePage = useCallback((event, newPage) => {
         setPage(newPage);
-    };
+    }, []);
 
-    const handleChangeRowsPerPage = (event) => {
+    const handleChangeRowsPerPage = useCallback((event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
-    };
+    }, []);
 
-    const handleChangeDense = (event) => {
+    const handleChangeDense = useCallback((event) => {
         setDense(event.target.checked);
-    };
+    }, []);
 
-    const isSelected = (name) => selected.indexOf(name) !== -1;
+    const isSelected = (id) => selected.indexOf(id) !== -1;
 
         // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
+
+    const handleInvoiceCreate = useCallback(() => {
+        onCreateInvoiceClick()
+    }, [onCreateInvoiceClick]);
+
     return (
         <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 2 }}>
-            <EnhancedTableToolbar numSelected={selected.length} />
+            <EnhancedTableToolbar
+                numSelected={selected.length}
+                onInvoiceCreate={handleInvoiceCreate}
+            />
             <TableContainer>
             <Table
                 sx={{ minWidth: 750 }}
@@ -275,17 +292,17 @@ export default function EnhancedTable() {
                 {stableSort(rows, getComparator(order, orderBy))
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row, index) => {
-                        const isItemSelected = isSelected(row.name);
+                        const isItemSelected = isSelected(row.id);
                         const labelId = `enhanced-table-checkbox-${index}`;
 
                         return (
                             <TableRow
                                 hover
-                                onClick={(event) => handleClick(event, row.name)}
+                                onClick={(event) => handleClick(event, row.id)}
                                 role="checkbox"
                                 aria-checked={isItemSelected}
                                 tabIndex={-1}
-                                key={row.name}
+                                key={row.name+row.id}
                                 selected={isItemSelected}
                             >
                             <TableCell padding="checkbox">
