@@ -208,7 +208,10 @@ export default function EnhancedTable({ campaignId }) {
     const [dense, setDense] = useState(false);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    const rows = useSelector((state) => (state.lineItem.items));
+    const isItemLoading = useSelector((state) => (state.lineItem.isItemLoading));
+
+    const lineItems = useSelector((state) => (state.lineItem.items));
+    const rows = isItemLoading ? [] : lineItems;
     const campaignName = useSelector((state) => (state.campaign.campaignLookup?.[campaignId]?.name));
 
     const handleRequestSort = (event, property) => {

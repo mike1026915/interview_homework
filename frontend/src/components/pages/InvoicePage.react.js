@@ -1,3 +1,5 @@
+import React from 'react';
+
 import Header from '../Header.react';
 import CampaignDataTable from '../CampaignDataTable.react';
 

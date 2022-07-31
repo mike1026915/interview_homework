@@ -192,7 +192,10 @@ export default function EnhancedTable() {
     const [dense, setDense] = useState(false);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    const rows = Object.values(useSelector((state) => (state.campaign.campaignLookup)));
+    const isLoading = useSelector((state) => (state.campaign.isCampaignLoading));
+    const campaigns = Object.values(useSelector((state) => (state.campaign.campaignLookup)));
+    const rows = isLoading ? [] : campaigns;
+
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
