@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import Header from '../Header.react';
 import CampaignDataTable from '../CampaignDataTable.react';
 import ConfirmDialog from '../ConfirmDialog.react';
+import FilterDialog from '../FilterDialog.react';
 
 import { fetchCampaigns } from '../../features/campaignSlice';
 import { createInvoices } from '../../features/invoiceSlice';
@@ -14,6 +15,8 @@ import { createInvoices } from '../../features/invoiceSlice';
 const CampaignPage = () => {
     const dispatch = useDispatch()
     const [selected, setSelected] = useState([]);
+    const [isFilterDialogOpened, setIsFilterDialogOpened] = useState(false);
+    const [filter, setFilter] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -42,6 +45,23 @@ const CampaignPage = () => {
         setSelected(s);
     }, [])
 
+    const handleFilterIconClick = useCallback(() => {
+        setIsFilterDialogOpened(true);
+    }, []);
+
+    const handleFilterDialogClose = useCallback(() => {
+        setIsFilterDialogOpened(false);
+    }, []);
+
+    const handleFilterSet = useCallback((keyword) => {
+        setFilter(keyword);
+        setIsFilterDialogOpened(false);
+    }, []);
+
+    const handleCleanFilter = useCallback((keyword) => {
+        setFilter('');
+    }, []);
+
     return (
         <>
             <Header />
@@ -49,6 +69,9 @@ const CampaignPage = () => {
                 selected={selected}
                 onCreateInvoiceClick={handleConfirmDialogOpen}
                 setSelected={handleSelected}
+                onFilterIconClick={handleFilterIconClick}
+                filter={filter}
+                cleanFilter={handleCleanFilter}
             />
             <ConfirmDialog
                 title="Create Invoices"
@@ -58,6 +81,11 @@ const CampaignPage = () => {
                 isOpen={isConfirmDialogOpen}
                 onClose={handleConfirmDialogClose}
                 onPrimaryAction={handleConfirmCreateInvoice}
+            />
+            <FilterDialog
+                open={isFilterDialogOpened}
+                onDialogClose={handleFilterDialogClose}
+                onFilterSet={handleFilterSet}
             />
         </>
     )

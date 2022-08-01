@@ -25,6 +25,8 @@ import Switch from '@mui/material/Switch';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import CircularProgress from '@mui/material/CircularProgress';
+import Chip from '@mui/material/Chip';
 import { visuallyHidden } from '@mui/utils';
 
 
@@ -130,18 +132,24 @@ EnhancedTableHead.propTypes = {
 };
 
 const EnhancedTableToolbar = (props) => {
-    const { numSelected, onInvoiceCreate } = props;
+    const {
+        numSelected,
+        onInvoiceCreate,
+        onFilterIconClick,
+        filter,
+        cleanFilter,
+    } = props;
 
     return (
         <Toolbar
-        sx={{
-            pl: { sm: 2 },
-            pr: { xs: 1, sm: 1 },
-            ...(numSelected > 0 && {
-            bgcolor: (theme) =>
-                alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-            }),
-        }}
+            sx={{
+                pl: { sm: 2 },
+                pr: { xs: 1, sm: 1 },
+                ...(numSelected > 0 && {
+                bgcolor: (theme) =>
+                    alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+                }),
+            }}
         >
         {numSelected > 0 ? (
             <Typography
@@ -153,14 +161,23 @@ const EnhancedTableToolbar = (props) => {
                 {numSelected} selected
             </Typography>
         ) : (
-            <Typography
-                sx={{ flex: '1 1 100%' }}
-                variant="h5"
-                id="tableTitle"
-                component="div"
-            >
-                Campaign
-            </Typography>
+            <>
+                <Typography
+                    sx={{ flex: '1 1 auto' }}
+                    variant="h5"
+                    id="tableTitle"
+                    component="div"
+                >
+                    Campaign
+                </Typography>
+                {filter ? (
+                    <Chip
+                        label={`Name: ${filter}`}
+                        variant="outlined"
+                        onDelete={cleanFilter}
+                    />) : null
+                }
+            </>
         )}
 
         {numSelected > 0 ? (
@@ -176,8 +193,10 @@ const EnhancedTableToolbar = (props) => {
                 </Button>
             </ButtonGroup>
         ) : (
-            <Tooltip title="Filter list">
-            <IconButton>
+            <Tooltip title="Filter">
+            <IconButton
+                onClick={onFilterIconClick}
+            >
                 <FilterListIcon />
             </IconButton>
             </Tooltip>
@@ -195,6 +214,9 @@ export default function EnhancedTable({
     onCreateInvoiceClick,
     selected,
     setSelected,
+    onFilterIconClick,
+    filter,
+    cleanFilter,
 }) {
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('name');
@@ -202,8 +224,10 @@ export default function EnhancedTable({
     const [dense, setDense] = useState(false);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
+    const lowerCaseFilter = filter.toLowerCase();
     const isLoading = useSelector((state) => (state.campaign.isCampaignLoading));
-    const campaigns = Object.values(useSelector((state) => (state.campaign.campaignLookup)));
+    const campaigns = Object.values(useSelector((state) => (state.campaign.campaignLookup)))
+        .filter((campaign) => (campaign?.name.toLowerCase().includes(lowerCaseFilter)));
     const rows = useMemo(() => (isLoading ? [] : campaigns), [isLoading, campaigns]);
 
     const handleRequestSort = useCallback((event, property) => {
@@ -273,6 +297,9 @@ export default function EnhancedTable({
             <EnhancedTableToolbar
                 numSelected={selected.length}
                 onInvoiceCreate={handleInvoiceCreate}
+                onFilterIconClick={onFilterIconClick}
+                filter={filter}
+                cleanFilter={cleanFilter}
             />
             <TableContainer>
             <Table
@@ -342,9 +369,21 @@ export default function EnhancedTable({
                     <TableCell colSpan={6} />
                     </TableRow>
                 )}
+
                 </TableBody>
             </Table>
             </TableContainer>
+            {isLoading ? (
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <CircularProgress />
+                    </Box>
+            ) : null}
             <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"

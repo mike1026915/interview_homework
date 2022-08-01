@@ -23,6 +23,7 @@ import Switch from '@mui/material/Switch';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import CircularProgress from '@mui/material/CircularProgress';
 import { visuallyHidden } from '@mui/utils';
 
 
@@ -150,14 +151,14 @@ const EnhancedTableToolbar = (props) => {
 
     return (
         <Toolbar
-        sx={{
-            pl: { sm: 2 },
-            pr: { xs: 1, sm: 1 },
-            ...(numSelected > 0 && {
-            bgcolor: (theme) =>
-                alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-            }),
-        }}
+            sx={{
+                pl: { sm: 2 },
+                pr: { xs: 1, sm: 1 },
+                ...(numSelected > 0 && {
+                bgcolor: (theme) =>
+                    alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+                }),
+            }}
         >
         {numSelected > 0 ? (
             <Typography
@@ -346,6 +347,17 @@ export default function EnhancedTable({ campaignId }) {
                 </TableBody>
             </Table>
             </TableContainer>
+            {isItemLoading ? (
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <CircularProgress />
+                    </Box>
+            ) : null}
             <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
