@@ -13,7 +13,6 @@ const InvoicePage = () => {
     const [isFilterDialogOpened, setIsFilterDialogOpened] = useState(false);
     const [filter, setFilter] = useState('');
 
-
     useEffect(() => {
         dispatch(getInvoices());
     }, [dispatch])

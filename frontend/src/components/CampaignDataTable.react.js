@@ -165,11 +165,11 @@ const EnhancedTableToolbar = (props) => {
             </ButtonGroup>
         ) : (
             <Tooltip title="Filter">
-            <IconButton
-                onClick={onFilterIconClick}
-            >
-                <FilterListIcon />
-            </IconButton>
+                <IconButton
+                    onClick={onFilterIconClick}
+                >
+                    <FilterListIcon />
+                </IconButton>
             </Tooltip>
         )}
         </Toolbar>
