@@ -16,6 +16,7 @@ const CampaignPage = () => {
     const dispatch = useDispatch()
     const [selected, setSelected] = useState([]);
     const [isFilterDialogOpened, setIsFilterDialogOpened] = useState(false);
+    const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [filter, setFilter] = useState('');
     const navigate = useNavigate();
 
@@ -23,7 +24,6 @@ const CampaignPage = () => {
         dispatch(fetchCampaigns());
     }, [dispatch])
 
-    const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState(false);
 
     const handleConfirmDialogOpen = useCallback(() => {
         setIsConfirmDialogOpen(true);
@@ -86,6 +86,8 @@ const CampaignPage = () => {
                 open={isFilterDialogOpened}
                 onDialogClose={handleFilterDialogClose}
                 onFilterSet={handleFilterSet}
+                dialogTitle="Campaign Filter"
+                dialogContent="Enter campaign name keyword"
             />
         </>
     )

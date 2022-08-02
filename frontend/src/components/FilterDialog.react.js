@@ -7,10 +7,12 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-export default function FormDialog({
+export default function FilterDialog({
     open,
     onDialogClose,
-    onFilterSet
+    onFilterSet,
+    dialogTitle,
+    dialogContent,
 }) {
 
     const [value, setValue] = useState('');
@@ -29,10 +31,10 @@ export default function FormDialog({
             open={open}
             onClose={onDialogClose}
         >
-            <DialogTitle>Campaign Filter</DialogTitle>
+            <DialogTitle>{dialogContent}</DialogTitle>
             <DialogContent>
             <DialogContentText>
-                Campaign name keyword
+                {dialogContent}
             </DialogContentText>
             <TextField
                 autoFocus

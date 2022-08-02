@@ -32,8 +32,8 @@ export const campaignSlice = createSlice({
         },
         [fetchCampaignById.fulfilled]: (state, action) => {
             const campaign = action.payload?.[0];
-            state.campaignLookup[campaign.campaignId] = campaign;
 
+            state.campaignLookup[campaign.id] = campaign;
             state.isCampaignLoading = false;
         },
     }

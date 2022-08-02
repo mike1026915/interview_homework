@@ -26,6 +26,7 @@ import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import CircularProgress from '@mui/material/CircularProgress';
+import Chip from '@mui/material/Chip';
 import { visuallyHidden } from '@mui/utils';
 
 import { getComparator, stableSort} from '../utility';
@@ -60,40 +61,40 @@ function EnhancedTableHead(props) {
 
     return (
         <TableHead>
-        <TableRow>
-            <TableCell padding="checkbox">
-            <Checkbox
-                color="primary"
-                indeterminate={numSelected > 0 && numSelected < rowCount}
-                checked={rowCount > 0 && numSelected === rowCount}
-                onChange={onSelectAllClick}
-                inputProps={{
-                    'aria-label': 'select all desserts',
-                }}
-            />
-            </TableCell>
-            {headCells.map((headCell) => (
-                <TableCell
-                    key={headCell.id}
-                    align="left"
-                    padding={headCell.disablePadding ? 'none' : 'normal'}
-                    sortDirection={orderBy === headCell.id ? order : false}
-                >
-                    <TableSortLabel
-                        active={orderBy === headCell.id}
-                        direction={orderBy === headCell.id ? order : 'asc'}
-                        onClick={createSortHandler(headCell.id)}
-                    >
-                    {headCell.label}
-                    {orderBy === headCell.id ? (
-                        <Box component="span" sx={visuallyHidden}>
-                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                        </Box>
-                    ) : null}
-                    </TableSortLabel>
+            <TableRow>
+                <TableCell padding="checkbox">
+                <Checkbox
+                    color="primary"
+                    indeterminate={numSelected > 0 && numSelected < rowCount}
+                    checked={rowCount > 0 && numSelected === rowCount}
+                    onChange={onSelectAllClick}
+                    inputProps={{
+                        'aria-label': 'select all desserts',
+                    }}
+                />
                 </TableCell>
-            ))}
-        </TableRow>
+                {headCells.map((headCell) => (
+                    <TableCell
+                        key={headCell.id}
+                        align="left"
+                        padding={headCell.disablePadding ? 'none' : 'normal'}
+                        sortDirection={orderBy === headCell.id ? order : false}
+                    >
+                        <TableSortLabel
+                            active={orderBy === headCell.id}
+                            direction={orderBy === headCell.id ? order : 'asc'}
+                            onClick={createSortHandler(headCell.id)}
+                        >
+                        {headCell.label}
+                        {orderBy === headCell.id ? (
+                            <Box component="span" sx={visuallyHidden}>
+                            {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                            </Box>
+                        ) : null}
+                        </TableSortLabel>
+                    </TableCell>
+                ))}
+            </TableRow>
         </TableHead>
     );
 }
@@ -108,7 +109,13 @@ EnhancedTableHead.propTypes = {
 };
 
 const EnhancedTableToolbar = (props) => {
-    const { numSelected, onInvoiceCreate } = props;
+    const {
+        numSelected,
+        onInvoiceCreate,
+        onFilterIconClick,
+        filter,
+        cleanFilter,
+    } = props;
 
     return (
         <Toolbar
@@ -131,14 +138,23 @@ const EnhancedTableToolbar = (props) => {
                 {numSelected} selected
             </Typography>
         ) : (
-            <Typography
-                sx={{ flex: '1 1 100%' }}
-                variant="h5"
-                id="tableTitle"
-                component="div"
-            >
-                Invoice
-            </Typography>
+            <>
+                <Typography
+                    sx={{ flex: '1 1 100%' }}
+                    variant="h5"
+                    id="tableTitle"
+                    component="div"
+                >
+                    Invoice
+                </Typography>
+                {filter ? (
+                    <Chip
+                        label={`Name: ${filter}`}
+                        variant="outlined"
+                        onDelete={cleanFilter}
+                    />) : null
+                }
+            </>
         )}
 
         {numSelected > 0 ? (
@@ -155,7 +171,9 @@ const EnhancedTableToolbar = (props) => {
             </ButtonGroup>
         ) : (
             <Tooltip title="Filter list">
-            <IconButton>
+            <IconButton
+                onClick={onFilterIconClick}
+            >
                 <FilterListIcon />
             </IconButton>
             </Tooltip>
@@ -173,6 +191,9 @@ export default function EnhancedTable({
     onCreateInvoiceClick,
     selected,
     setSelected,
+    onFilterIconClick,
+    filter,
+    cleanFilter,
 }) {
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('name');
@@ -180,8 +201,10 @@ export default function EnhancedTable({
     const [dense, setDense] = useState(false);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
+    const lowerCaseFilter = filter.toLowerCase();
     const isLoading = useSelector((state) => (state.invoice.isInvoicesLoading));
-    const invoices = Object.values(useSelector((state) => (state.invoice.invoiceLookup)));
+    const invoices = Object.values(useSelector((state) => (state.invoice.invoiceLookup)))
+        .filter((invoice) => (invoice?.name.toLowerCase().includes(lowerCaseFilter)));;
     const rows = useMemo(() => (isLoading ? [] : invoices), [isLoading, invoices]);
     const usdToCurrentCurrencyRate = useSelector((state) => (state.app.usdToCurrentCurrencyRate));
 
@@ -252,6 +275,9 @@ export default function EnhancedTable({
                 <EnhancedTableToolbar
                     numSelected={selected.length}
                     onInvoiceCreate={handleInvoiceCreate}
+                    onFilterIconClick={onFilterIconClick}
+                    filter={filter}
+                    cleanFilter={cleanFilter}
                 />
                 <TableContainer>
                 <Table
