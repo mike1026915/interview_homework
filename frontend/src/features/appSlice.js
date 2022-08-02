@@ -19,7 +19,7 @@ export const appSlice = createSlice({
     extraReducers: {
         [getCurrencyRate.fulfilled]: (state, action) => {
             if (state.currentCurrency === 'EUR') {
-                state.usdToCurrentCurrencyRate = action.payload?.['EUR'];
+                state.usdToCurrentCurrencyRate = action.payload?.['EUR'] || 1; //TODO: handle API error
             } else {
                 state.usdToCurrentCurrencyRate = 1;
 
