@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux'
 
 import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
@@ -12,7 +13,11 @@ import MenuItem from "@mui/material/MenuItem";
 import Typography from '@mui/material/Typography';
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
+import { setCurrency, getCurrencyRate } from '../features/appSlice';
 
 function ElevationScroll(props) {
     const { children } = props;
@@ -34,6 +39,7 @@ const pages = ['campaigns', 'invoices'];
 
 export default function Header(props) {
     const [anchorElNav, setAnchorElNav] = useState(null);
+    const dispatch = useDispatch()
 
     const handleOpenNavMenu = useCallback((event) => {
         setAnchorElNav(event.currentTarget);
@@ -42,6 +48,14 @@ export default function Header(props) {
     const handleCloseNavMenu = useCallback(() => {
         setAnchorElNav(null);
     }, []);
+
+    const currentCurrency = useSelector((state) => (state.app.currentCurrency));
+    const handleCurrencyChange = useCallback((event) => {
+        const currency = event.target.value;
+
+        dispatch(setCurrency(currency));
+        dispatch(getCurrencyRate(currency));
+    }, [dispatch]);
 
     return (
         <>
@@ -143,6 +157,27 @@ export default function Header(props) {
                             </Button>
                             ))}
                         </Box>
+                        <FormControl
+                            size="small"
+                            sx={{
+                                width: '15%',
+                            }}
+                        >
+                            <InputLabel sx={{ color: 'white'}} id="currency">Currency</InputLabel>
+                            <Select
+                                labelId="currency"
+                                id="currency"
+                                value={currentCurrency}
+                                label="Currency"
+                                onChange={handleCurrencyChange}
+                                sx={{
+                                    color: 'white',
+                                }}
+                            >
+                                <MenuItem value="USD">USD</MenuItem>
+                                <MenuItem value="EUR">EUR</MenuItem>
+                            </Select>
+                        </FormControl>
                     </Toolbar>
 
                 </AppBar>

@@ -212,6 +212,7 @@ export default function EnhancedTable({
     const isLoading = useSelector((state) => (state.invoice.isInvoicesLoading));
     const invoices = Object.values(useSelector((state) => (state.invoice.invoiceLookup)));
     const rows = useMemo(() => (isLoading ? [] : invoices), [isLoading, invoices]);
+    const usdToCurrentCurrencyRate = useSelector((state) => (state.app.usdToCurrentCurrencyRate));
 
     const handleRequestSort = useCallback((event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -276,108 +277,108 @@ export default function EnhancedTable({
 
     return (
         <Box sx={{ width: '100%' }}>
-        <Paper sx={{ width: '100%', mb: 2 }}>
-            <EnhancedTableToolbar
-                numSelected={selected.length}
-                onInvoiceCreate={handleInvoiceCreate}
-            />
-            <TableContainer>
-            <Table
-                sx={{ minWidth: 750 }}
-                aria-labelledby="tableTitle"
-                size={dense ? 'small' : 'medium'}
-            >
-                <EnhancedTableHead
+            <Paper sx={{ width: '100%', mb: 2 }}>
+                <EnhancedTableToolbar
                     numSelected={selected.length}
-                    order={order}
-                    orderBy={orderBy}
-                    onSelectAllClick={handleSelectAllClick}
-                    onRequestSort={handleRequestSort}
-                    rowCount={rows.length}
+                    onInvoiceCreate={handleInvoiceCreate}
                 />
-                <TableBody>
-                {stableSort(rows, getComparator(order, orderBy))
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, index) => {
-                        const isItemSelected = isSelected(row.id);
-                        const labelId = `enhanced-table-checkbox-${index}`;
+                <TableContainer>
+                <Table
+                    sx={{ minWidth: 750 }}
+                    aria-labelledby="tableTitle"
+                    size={dense ? 'small' : 'medium'}
+                >
+                    <EnhancedTableHead
+                        numSelected={selected.length}
+                        order={order}
+                        orderBy={orderBy}
+                        onSelectAllClick={handleSelectAllClick}
+                        onRequestSort={handleRequestSort}
+                        rowCount={rows.length}
+                    />
+                    <TableBody>
+                    {stableSort(rows, getComparator(order, orderBy))
+                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        .map((row, index) => {
+                            const isItemSelected = isSelected(row.id);
+                            const labelId = `enhanced-table-checkbox-${index}`;
 
-                        return (
-                            <TableRow
-                                hover
-                                onClick={(event) => handleClick(event, row.id)}
-                                role="checkbox"
-                                aria-checked={isItemSelected}
-                                tabIndex={-1}
-                                key={row.name+row.id}
-                                selected={isItemSelected}
-                            >
-                            <TableCell padding="checkbox">
-                                <Checkbox
-                                    color="primary"
-                                    checked={isItemSelected}
-                                    inputProps={{
-                                        'aria-labelledby': labelId,
-                                    }}
-                                />
-                            </TableCell>
-                            <TableCell
-                                component="th"
-                                id={labelId}
-                                scope="row"
-                                padding="none"
-                            >
-                                <Tooltip title="Click to view line-items" arrow>
-                                    <Link
-                                        to={`/line-items/${row.id}`}
-                                    >
-                                        {row.name}
-                                    </Link>
-                                </Tooltip>
+                            return (
+                                <TableRow
+                                    hover
+                                    onClick={(event) => handleClick(event, row.id)}
+                                    role="checkbox"
+                                    aria-checked={isItemSelected}
+                                    tabIndex={-1}
+                                    key={row.name+row.id}
+                                    selected={isItemSelected}
+                                >
+                                <TableCell padding="checkbox">
+                                    <Checkbox
+                                        color="primary"
+                                        checked={isItemSelected}
+                                        inputProps={{
+                                            'aria-labelledby': labelId,
+                                        }}
+                                    />
+                                </TableCell>
+                                <TableCell
+                                    component="th"
+                                    id={labelId}
+                                    scope="row"
+                                    padding="none"
+                                >
+                                    <Tooltip title="Click to view line-items" arrow>
+                                        <Link
+                                            to={`/line-items/${row.id}`}
+                                        >
+                                            {row.name}
+                                        </Link>
+                                    </Tooltip>
 
-                            </TableCell>
-                            <TableCell align="left">{row.total}</TableCell>
-                            <TableCell align="left">{new Date(row.createdAt).toLocaleString()}</TableCell>
-                            </TableRow>
-                        );
-                    })}
-                {emptyRows > 0 && (
-                    <TableRow
-                        style={{
-                            height: (dense ? 33 : 53) * emptyRows,
-                        }}
-                    >
-                    <TableCell colSpan={6} />
-                    </TableRow>
-                )}
-                </TableBody>
-            </Table>
-            </TableContainer>
-            {isLoading ? (
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <CircularProgress />
-                    </Box>
-            ) : null}
-            <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={rows.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
+                                </TableCell>
+                                <TableCell align="left">{row.total * usdToCurrentCurrencyRate}</TableCell>
+                                <TableCell align="left">{new Date(row.createdAt).toLocaleString()}</TableCell>
+                                </TableRow>
+                            );
+                        })}
+                    {emptyRows > 0 && (
+                        <TableRow
+                            style={{
+                                height: (dense ? 33 : 53) * emptyRows,
+                            }}
+                        >
+                        <TableCell colSpan={6} />
+                        </TableRow>
+                    )}
+                    </TableBody>
+                </Table>
+                </TableContainer>
+                {isLoading ? (
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <CircularProgress />
+                        </Box>
+                ) : null}
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={rows.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+            </Paper>
+            <FormControlLabel
+                control={<Switch checked={dense} onChange={handleChangeDense} />}
+                label="Dense padding"
             />
-        </Paper>
-        <FormControlLabel
-            control={<Switch checked={dense} onChange={handleChangeDense} />}
-            label="Dense padding"
-        />
         </Box>
     );
 }

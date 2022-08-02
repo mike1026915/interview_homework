@@ -216,6 +216,7 @@ export default function EnhancedTable({ campaignId }) {
     const lineItems = useSelector((state) => (state.lineItem.items));
     const rows = isItemLoading ? [] : lineItems;
     const campaignName = useSelector((state) => (state.campaign.campaignLookup?.[campaignId]?.name));
+    const usdToCurrentCurrencyRate = useSelector((state) => (state.app.usdToCurrentCurrencyRate));
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -328,10 +329,10 @@ export default function EnhancedTable({ campaignId }) {
                             >
                                 {row.name}
                             </TableCell>
-                            <TableCell align="left">{row.bookedAmount}</TableCell>
-                            <TableCell align="left">{row.actualAmount}</TableCell>
-                            <TableCell align="left">{row.adjustment}</TableCell>
-                            <TableCell align="left">{row.actualAmount + row.adjustment}</TableCell>
+                            <TableCell align="left">{row.bookedAmount * usdToCurrentCurrencyRate}</TableCell>
+                            <TableCell align="left">{row.actualAmount * usdToCurrentCurrencyRate}</TableCell>
+                            <TableCell align="left">{row.adjustment * usdToCurrentCurrencyRate}</TableCell>
+                            <TableCell align="left">{(row.actualAmount + row.adjustment) * usdToCurrentCurrencyRate}</TableCell>
                             </TableRow>
                         );
                     })}
