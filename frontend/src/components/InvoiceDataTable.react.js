@@ -310,32 +310,32 @@ export default function EnhancedTable({
                                     key={row.name+row.id}
                                     selected={isItemSelected}
                                 >
-                                <TableCell padding="checkbox">
-                                    <Checkbox
-                                        color="primary"
-                                        checked={isItemSelected}
-                                        inputProps={{
-                                            'aria-labelledby': labelId,
-                                        }}
-                                    />
-                                </TableCell>
-                                <TableCell
-                                    component="th"
-                                    id={labelId}
-                                    scope="row"
-                                    padding="none"
-                                >
-                                    <Tooltip title="Click to view line-items" arrow>
-                                        <Link
-                                            to={`/line-items/${row.id}`}
-                                        >
-                                            {row.name}
-                                        </Link>
-                                    </Tooltip>
+                                    <TableCell padding="checkbox">
+                                        <Checkbox
+                                            color="primary"
+                                            checked={isItemSelected}
+                                            inputProps={{
+                                                'aria-labelledby': labelId,
+                                            }}
+                                        />
+                                    </TableCell>
+                                    <TableCell
+                                        component="th"
+                                        id={labelId}
+                                        scope="row"
+                                        padding="none"
+                                    >
+                                        <Tooltip title="Click to view line-items" arrow>
+                                            <Link
+                                                to={`/line-items/${row.id}`}
+                                            >
+                                                {row.name}
+                                            </Link>
+                                        </Tooltip>
 
-                                </TableCell>
-                                <TableCell align="left">{row.total * usdToCurrentCurrencyRate}</TableCell>
-                                <TableCell align="left">{new Date(row.createdAt).toLocaleString()}</TableCell>
+                                    </TableCell>
+                                    <TableCell align="left">{row.total * usdToCurrentCurrencyRate}</TableCell>
+                                    <TableCell align="left">{new Date(row.createdAt).toLocaleString()}</TableCell>
                                 </TableRow>
                             );
                         })}

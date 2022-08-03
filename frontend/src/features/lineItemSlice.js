@@ -1,11 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import {
     getLineItems,
-    getLineItemsByCampaignId
+    getLineItemsByCampaignId,
+    updateAdjustment as updateAdjustmentAction,
 } from '../apis/lineItemApi';
 
 export const fetchLineItems = createAsyncThunk('lineItem/getLineItems', getLineItems);
 export const fetchLineItemsByCampaignId = createAsyncThunk('lineItem/getLineItemsByCampaignId', getLineItemsByCampaignId);
+export const updateAdjustment = createAsyncThunk('lineItem/updateAdjustment', updateAdjustmentAction);
 
 export const lineItemSlice = createSlice({
     name: 'lineItem',
@@ -29,6 +31,11 @@ export const lineItemSlice = createSlice({
         [fetchLineItemsByCampaignId.fulfilled]: (state, action) => {
             state.items = action.payload;
             state.isItemLoading = false;
+        },
+        [updateAdjustment.fulfilled]: (state, action) => {
+            state.items.find((item) => {
+                return item.id === Number(action.payload.id)
+            }).adjustment = action.payload.adjustment;
         },
     }
 });

@@ -34,4 +34,30 @@ router.get('/:id', async function(req, res, next) {
     }
 });
 
+router.put('/:id', async function(req, res, next) {
+    try {
+        const id = req.params.id;
+        const {
+            adjustment
+        } = req.body;
+
+        const result = await LineItem.update({
+            adjustment,
+        },{
+            where: {
+                id
+            }
+        });
+
+        res.status(200).json({
+            id,
+            adjustment,
+        });
+    } catch (err) {
+        console.error(err);
+
+        next(err);
+    }
+});
+
 module.exports = router;

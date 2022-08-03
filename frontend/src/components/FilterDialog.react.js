@@ -31,7 +31,7 @@ export default function FilterDialog({
             open={open}
             onClose={onDialogClose}
         >
-            <DialogTitle>{dialogContent}</DialogTitle>
+            <DialogTitle>{dialogTitle}</DialogTitle>
             <DialogContent>
             <DialogContentText>
                 {dialogContent}

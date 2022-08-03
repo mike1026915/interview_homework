@@ -13,3 +13,11 @@ export const getLineItemsByCampaignId = async (campaignId) => {
 
     return response.data;
 }
+
+export const updateAdjustment = async ({id, adjustment}) => {
+    const response = await axios.put(`${URL_HOST}/line-items/${id}`, {
+        adjustment
+    });
+
+    return response.data;
+}

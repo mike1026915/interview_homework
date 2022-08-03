@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -20,14 +20,18 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import DoneIcon from '@mui/icons-material/Done';
 import CircularProgress from '@mui/material/CircularProgress';
+import TextField from '@mui/material/TextField';
 import Chip from '@mui/material/Chip';
 import { visuallyHidden } from '@mui/utils';
 
 import { getComparator, stableSort} from '../utility';
+
+import { updateAdjustment } from '../features/lineItemSlice';
 
 const headCells = [
     {
@@ -169,9 +173,6 @@ const EnhancedTableToolbar = (props) => {
 
         {numSelected > 0 ? (
             <ButtonGroup variant="outlined" aria-label="outlined button group">
-                <Button>One</Button>
-                <Button>Two</Button>
-                <Button>Three</Button>
             </ButtonGroup>
         ) : (
             <Tooltip title="Filter">
@@ -197,45 +198,48 @@ export default function EnhancedTable({
     filter,
     cleanFilter,
 }) {
+    const dispatch = useDispatch()
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('name');
     const [selected, setSelected] = useState([]);
     const [page, setPage] = useState(0);
     const [dense, setDense] = useState(false);
     const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [adjustmentEditLookup, setAdjustmentEditLookup] = useState({});
+    const [adjustmentValueLookup, setAdjustmentValueLookup] = useState({})
 
     const isItemLoading = useSelector((state) => (state.lineItem.isItemLoading));
 
     const lowerCaseFilter = filter.toLowerCase();
     const lineItems = useSelector((state) => (state.lineItem.items))
         .filter((item) => (item?.name.toLowerCase().includes(lowerCaseFilter)));
-    const rows = isItemLoading ? [] : lineItems;
+    const rows = useMemo(() => (isItemLoading ? [] : lineItems), [isItemLoading, lineItems]);
     const campaignName = useSelector((state) => (state.campaign.campaignLookup?.[campaignId]?.name));
     const usdToCurrentCurrencyRate = useSelector((state) => (state.app.usdToCurrentCurrencyRate));
 
-    const handleRequestSort = (event, property) => {
+    const handleRequestSort = useCallback((event, property) => {
         const isAsc = orderBy === property && order === 'asc';
 
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
-    };
+    }, [order, orderBy]);
 
-    const handleSelectAllClick = (event) => {
+    const handleSelectAllClick = useCallback((event) => {
         if (event.target.checked) {
-            const newSelecteds = rows.map((n) => n.name);
+            const newSelecteds = rows.map((n) => n.id);
 
             setSelected(newSelecteds);
             return;
         }
         setSelected([]);
-    };
+    }, [rows]);
 
-    const handleClick = (event, name) => {
-        const selectedIndex = selected.indexOf(name);
+    const handleClick = useCallback((event, id) => {
+        const selectedIndex = selected.indexOf(id);
         let newSelected = [];
 
         if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, name);
+            newSelected = newSelected.concat(selected, id);
         } else if (selectedIndex === 0) {
             newSelected = newSelected.concat(selected.slice(1));
         } else if (selectedIndex === selected.length - 1) {
@@ -248,22 +252,76 @@ export default function EnhancedTable({
         }
 
         setSelected(newSelected);
-    };
+    }, [selected]);
 
-    const handleChangePage = (event, newPage) => {
+    const handleChangePage = useCallback((event, newPage) => {
         setPage(newPage);
-    };
+    }, []);
 
-    const handleChangeRowsPerPage = (event) => {
+    const handleChangeRowsPerPage = useCallback((event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
-    };
+    }, []);
 
-    const handleChangeDense = (event) => {
+    const handleChangeDense = useCallback((event) => {
         setDense(event.target.checked);
-    };
+    }, []);
 
-    const isSelected = (name) => selected.indexOf(name) !== -1;
+    const createHandleAdjustmentClick = (id, initValue) => {
+        return (event) => {
+            const newAdjustmentEditLookup = {
+                ...adjustmentEditLookup,
+                [id]: !adjustmentEditLookup[id],
+            };
+
+            const newAdjustmentValueLookup = {
+                ...adjustmentValueLookup,
+                [id]: initValue,
+            };
+
+            event.stopPropagation();
+
+            setAdjustmentEditLookup(newAdjustmentEditLookup)
+            setAdjustmentValueLookup(newAdjustmentValueLookup);
+        };
+    }
+
+    const createHandleAdjustmentSaveClick = (id) => {
+        return (event) => {
+            const newAdjustmentEditLookup = {
+                ...adjustmentEditLookup,
+                [id]: !adjustmentEditLookup[id],
+            }
+
+            event.stopPropagation();
+
+            setAdjustmentEditLookup(newAdjustmentEditLookup);
+
+            dispatch(updateAdjustment({ id, adjustment: adjustmentValueLookup[id] }));
+        };
+    }
+
+    const createHandleAdjustmentChange = (id) => {
+        return (event) => {
+            const value = Number(event.target.value);
+
+            const newAdjustmentValueLookup = {
+                ...adjustmentValueLookup,
+                [id]: value,
+            }
+
+            event.stopPropagation();
+
+            setAdjustmentValueLookup(newAdjustmentValueLookup);
+        };
+    }
+
+    const handleTextFieldClick = useCallback((event) => {
+        event.stopPropagation();
+    }, [])
+
+
+    const isSelected = (id) => selected.indexOf(id) !== -1;
 
         // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows =
@@ -297,40 +355,85 @@ export default function EnhancedTable({
                     {stableSort(rows, getComparator(order, orderBy))
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((row, index) => {
-                            const isItemSelected = isSelected(row.name);
+                            const isItemSelected = isSelected(row.id);
                             const labelId = `enhanced-table-checkbox-${index}`;
 
                             return (
                                 <TableRow
                                     hover
-                                    onClick={(event) => handleClick(event, row.name)}
+                                    onClick={(event) => handleClick(event, row.id)}
                                     role="checkbox"
                                     aria-checked={isItemSelected}
                                     tabIndex={-1}
                                     key={row.name}
                                     selected={isItemSelected}
                                 >
-                                <TableCell padding="checkbox">
-                                    <Checkbox
-                                        color="primary"
-                                        checked={isItemSelected}
-                                        inputProps={{
-                                            'aria-labelledby': labelId,
-                                        }}
-                                    />
-                                </TableCell>
-                                <TableCell
-                                    component="th"
-                                    id={labelId}
-                                    scope="row"
-                                    padding="none"
-                                >
-                                    {row.name}
-                                </TableCell>
-                                <TableCell align="left">{row.bookedAmount * usdToCurrentCurrencyRate}</TableCell>
-                                <TableCell align="left">{row.actualAmount * usdToCurrentCurrencyRate}</TableCell>
-                                <TableCell align="left">{row.adjustment * usdToCurrentCurrencyRate}</TableCell>
-                                <TableCell align="left">{(row.actualAmount + row.adjustment) * usdToCurrentCurrencyRate}</TableCell>
+                                    <TableCell padding="checkbox">
+                                        <Checkbox
+                                            color="primary"
+                                            checked={isItemSelected}
+                                            inputProps={{
+                                                'aria-labelledby': labelId,
+                                            }}
+                                        />
+                                    </TableCell>
+                                    <TableCell
+                                        component="th"
+                                        id={labelId}
+                                        scope="row"
+                                        padding="none"
+                                    >
+                                        {row.name}
+                                    </TableCell>
+                                    <TableCell align="left">{row.bookedAmount * usdToCurrentCurrencyRate}</TableCell>
+                                    <TableCell align="left">{row.actualAmount * usdToCurrentCurrencyRate}</TableCell>
+                                    <TableCell align="left">
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                            }}
+                                        >
+                                            { adjustmentEditLookup[row.id] ? (
+                                                <>
+                                                    <TextField
+                                                        name={`${row.id}`}
+                                                        value={adjustmentValueLookup[row.id]}
+                                                        size="small"
+                                                        onChange={createHandleAdjustmentChange(row.id)}
+                                                        onClick={handleTextFieldClick}
+                                                    />
+                                                    <Tooltip title="Click to save">
+                                                        <IconButton
+                                                            onClick={createHandleAdjustmentSaveClick(row.id)}
+                                                        >
+                                                            <DoneIcon
+                                                                sx={{
+                                                                    width: '1rem',
+                                                                }}
+                                                            />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <span>{row.adjustment * usdToCurrentCurrencyRate}</span>
+                                                    <Tooltip title="Click to edit">
+                                                        <IconButton
+                                                            onClick={createHandleAdjustmentClick(row.id, row.adjustment * usdToCurrentCurrencyRate)}
+                                                        >
+                                                            <ModeEditIcon
+                                                                sx={{
+                                                                    width: '1rem',
+                                                                }}
+                                                            />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </>
+                                            )}
+                                        </Box>
+                                    </TableCell>
+                                    <TableCell align="left">{(row.actualAmount + row.adjustment) * usdToCurrentCurrencyRate}</TableCell>
                                 </TableRow>
                             );
                         })}
