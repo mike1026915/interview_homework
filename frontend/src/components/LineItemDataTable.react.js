@@ -216,6 +216,8 @@ export default function EnhancedTable({
     const rows = useMemo(() => (isItemLoading ? [] : lineItems), [isItemLoading, lineItems]);
     const campaignName = useSelector((state) => (state.campaign.campaignLookup?.[campaignId]?.name));
     const usdToCurrentCurrencyRate = useSelector((state) => (state.app.usdToCurrentCurrencyRate));
+    const currentCurrency = useSelector((state) => (state.app.currentCurrency));
+    const isUsd = currentCurrency === 'USD';
 
     const handleRequestSort = useCallback((event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -269,6 +271,12 @@ export default function EnhancedTable({
 
     const createHandleAdjustmentClick = (id, initValue) => {
         return (event) => {
+            event.stopPropagation();
+
+            if(!isUsd) {
+                return
+            }
+
             const newAdjustmentEditLookup = {
                 ...adjustmentEditLookup,
                 [id]: !adjustmentEditLookup[id],
@@ -278,8 +286,6 @@ export default function EnhancedTable({
                 ...adjustmentValueLookup,
                 [id]: initValue,
             };
-
-            event.stopPropagation();
 
             setAdjustmentEditLookup(newAdjustmentEditLookup)
             setAdjustmentValueLookup(newAdjustmentValueLookup);
@@ -418,13 +424,15 @@ export default function EnhancedTable({
                                             ) : (
                                                 <>
                                                     <span>{row.adjustment * usdToCurrentCurrencyRate}</span>
-                                                    <Tooltip title="Click to edit">
+                                                    <Tooltip title={isUsd ? 'Click to edit' : 'Editable only when currency is USD'}>
                                                         <IconButton
                                                             onClick={createHandleAdjustmentClick(row.id, row.adjustment * usdToCurrentCurrencyRate)}
                                                         >
                                                             <ModeEditIcon
+                                                                disabled={!isUsd}
                                                                 sx={{
                                                                     width: '1rem',
+                                                                    opacity: isUsd ? 1 : 0.3,
                                                                 }}
                                                             />
                                                         </IconButton>
