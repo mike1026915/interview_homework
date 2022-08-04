@@ -1,6 +1,7 @@
 const express = require('express');
+const { Op, literal } = require("sequelize");
 const {
-    LineItem
+    LineItem,
 } = require('../models');
 
 const router = express.Router();
@@ -17,7 +18,7 @@ router.get('/', async function(req, res, next) {
     }
 });
 
-router.get('/:id', async function(req, res, next) {
+router.get('/campaign/:id', async function(req, res, next) {
     try {
         const id = req.params.id;
         const result = await LineItem.findAll({
@@ -34,6 +35,32 @@ router.get('/:id', async function(req, res, next) {
     }
 });
 
+router.put('/reviewed', async function(req, res, next) {
+    try {
+        const {
+            ids,
+        } = req.body;
+
+        await LineItem.update({
+            isReviewed: literal(' NOT isReviewed'),
+        },{
+            where: {
+                id: {
+                    [Op.in]: ids,
+                }
+            }
+        });
+
+        res.status(200).json({
+            ids
+        });
+    } catch (err) {
+        console.error(err);
+
+        next(err);
+    }
+});
+
 router.put('/:id', async function(req, res, next) {
     try {
         const id = req.params.id;
@@ -41,7 +68,7 @@ router.put('/:id', async function(req, res, next) {
             adjustment
         } = req.body;
 
-        const result = await LineItem.update({
+        await LineItem.update({
             adjustment,
         },{
             where: {

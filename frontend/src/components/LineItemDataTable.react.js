@@ -21,8 +21,10 @@ import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import ButtonGroup from '@mui/material/ButtonGroup';
+import Button from '@mui/material/Button';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import EditOffIcon from '@mui/icons-material/EditOff';
 import DoneIcon from '@mui/icons-material/Done';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
@@ -31,7 +33,8 @@ import { visuallyHidden } from '@mui/utils';
 
 import { getComparator, stableSort} from '../utility';
 
-import { updateAdjustment } from '../features/lineItemSlice';
+import { updateAdjustment, setItemReviewed } from '../features/lineItemSlice';
+
 
 const headCells = [
     {
@@ -127,6 +130,7 @@ const EnhancedTableToolbar = (props) => {
         numSelected,
         campaignName,
         onFilterIconClick,
+        onReviewedClick,
         filter,
         cleanFilter,
     } = props;
@@ -173,6 +177,15 @@ const EnhancedTableToolbar = (props) => {
 
         {numSelected > 0 ? (
             <ButtonGroup variant="outlined" aria-label="outlined button group">
+                <Button
+                    size="small"
+                    sx={{
+                        whiteSpace: 'nowrap',
+                    }}
+                    onClick={onReviewedClick}
+                >
+                    Toggle reviewed
+                </Button>
             </ButtonGroup>
         ) : (
             <Tooltip title="Filter">
@@ -326,6 +339,9 @@ export default function EnhancedTable({
         event.stopPropagation();
     }, [])
 
+    const handleReviewedClick = useCallback(() => {
+        dispatch(setItemReviewed(selected))
+    }, [selected, dispatch])
 
     const isSelected = (id) => selected.indexOf(id) !== -1;
 
@@ -342,6 +358,7 @@ export default function EnhancedTable({
                     onFilterIconClick={onFilterIconClick}
                     filter={filter}
                     cleanFilter={cleanFilter}
+                    onReviewedClick={handleReviewedClick}
                 />
                 <TableContainer>
                 <Table
@@ -389,7 +406,25 @@ export default function EnhancedTable({
                                         scope="row"
                                         padding="none"
                                     >
-                                        {row.name}
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '0.5rem'
+                                            }}
+                                        >
+                                            {row.name}
+                                            {row.isReviewed ? (
+                                                <Tooltip title="reviewed">
+                                                    <EditOffIcon
+                                                        sx={{
+                                                            width: '1rem',
+                                                            opacity: '0.3'
+                                                        }}
+                                                    />
+                                                </Tooltip>
+                                            ) : null}
+                                        </Box>
                                     </TableCell>
                                     <TableCell align="left">{row.bookedAmount * usdToCurrentCurrencyRate}</TableCell>
                                     <TableCell align="left">{row.actualAmount * usdToCurrentCurrencyRate}</TableCell>
@@ -400,7 +435,7 @@ export default function EnhancedTable({
                                                 alignItems: 'center',
                                             }}
                                         >
-                                            { adjustmentEditLookup[row.id] ? (
+                                            { (adjustmentEditLookup[row.id]) ? (
                                                 <>
                                                     <TextField
                                                         name={`${row.id}`}
@@ -424,15 +459,17 @@ export default function EnhancedTable({
                                             ) : (
                                                 <>
                                                     <span>{row.adjustment * usdToCurrentCurrencyRate}</span>
-                                                    <Tooltip title={isUsd ? 'Click to edit' : 'Editable only when currency is USD'}>
+                                                    <Tooltip title={(isUsd && !row.isReviewed) ? 'Click to edit' : (
+                                                        row.isReviewed ? 'Reviewed item is not editable' : 'Editable only when currency is USD'
+                                                    )}>
                                                         <IconButton
                                                             onClick={createHandleAdjustmentClick(row.id, row.adjustment * usdToCurrentCurrencyRate)}
                                                         >
                                                             <ModeEditIcon
-                                                                disabled={!isUsd}
+                                                                disabled={!isUsd || row.isReviewed}
                                                                 sx={{
                                                                     width: '1rem',
-                                                                    opacity: isUsd ? 1 : 0.3,
+                                                                    opacity: (isUsd && !row.isReviewed) ? 1 : 0.3,
                                                                 }}
                                                             />
                                                         </IconButton>

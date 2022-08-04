@@ -327,7 +327,7 @@ export default function EnhancedTable({
                                     >
                                         <Tooltip title="Click to view line-items" arrow>
                                             <Link
-                                                to={`/line-items/${row.id}`}
+                                                to={`/line-items//campaign/${row.id}`}
                                             >
                                                 {row.name}
                                             </Link>

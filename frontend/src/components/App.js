@@ -16,7 +16,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<CampaignPage/>} />
                     <Route path="/campaigns" element={<CampaignPage/>} />
-                    <Route path="/line-items/:id" element={<LineItemPage/>} />
+                    <Route path="/line-items/campaign/:id" element={<LineItemPage/>} />
                     <Route path="/invoices" exact element={<InvoicePage/>} />
                 </Routes>
             </BrowserRouter>

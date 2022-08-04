@@ -3,11 +3,13 @@ import {
     getLineItems,
     getLineItemsByCampaignId,
     updateAdjustment as updateAdjustmentAction,
+    setItemReviewed as setItemReviewedAction,
 } from '../apis/lineItemApi';
 
 export const fetchLineItems = createAsyncThunk('lineItem/getLineItems', getLineItems);
 export const fetchLineItemsByCampaignId = createAsyncThunk('lineItem/getLineItemsByCampaignId', getLineItemsByCampaignId);
 export const updateAdjustment = createAsyncThunk('lineItem/updateAdjustment', updateAdjustmentAction);
+export const setItemReviewed = createAsyncThunk('lineItem/setItemReviewed', setItemReviewedAction);
 
 export const lineItemSlice = createSlice({
     name: 'lineItem',
@@ -36,6 +38,15 @@ export const lineItemSlice = createSlice({
             state.items.find((item) => {
                 return item.id === Number(action.payload.id)
             }).adjustment = action.payload.adjustment;
+        },
+        [setItemReviewed.fulfilled]: (state, action) => {
+            const reviewedIds = action.payload.ids.map(Number);
+
+            state.items.forEach((item) => {
+                if (reviewedIds.includes(item.id)) {
+                    item.isReviewed = !item.isReviewed
+                };
+            })
         },
     }
 });
