@@ -29,6 +29,7 @@ import DoneIcon from '@mui/icons-material/Done';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
 import Chip from '@mui/material/Chip';
+import Snackbar from '@mui/material/Snackbar';
 import { visuallyHidden } from '@mui/utils';
 
 import { getComparator, stableSort} from '../utility';
@@ -220,6 +221,7 @@ export default function EnhancedTable({
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [adjustmentEditLookup, setAdjustmentEditLookup] = useState({});
     const [adjustmentValueLookup, setAdjustmentValueLookup] = useState({})
+    const [showToggleReviewedSnackbar, setShowToggleReviewedSnackbar] = useState(false);
 
     const isItemLoading = useSelector((state) => (state.lineItem.isItemLoading));
 
@@ -341,7 +343,15 @@ export default function EnhancedTable({
 
     const handleReviewedClick = useCallback(() => {
         dispatch(setItemReviewed(selected))
+
+        setShowToggleReviewedSnackbar(true);
+
+        setSelected([]);
     }, [selected, dispatch])
+
+    const handleToggleReviewSnackbarClose = useCallback(() => {
+        setShowToggleReviewedSnackbar(false);
+    }, []);
 
     const isSelected = (id) => selected.indexOf(id) !== -1;
 
@@ -518,6 +528,12 @@ export default function EnhancedTable({
             <FormControlLabel
                 control={<Switch checked={dense} onChange={handleChangeDense} />}
                 label="Dense padding"
+            />
+            <Snackbar
+                open={showToggleReviewedSnackbar}
+                autoHideDuration={3000}
+                message="Items review toggled"
+                onClose={handleToggleReviewSnackbarClose}
             />
         </Box>
     );
