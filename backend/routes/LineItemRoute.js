@@ -8,7 +8,11 @@ const router = express.Router();
 
 router.get('/', async function(req, res, next) {
     try {
-        const result = await LineItem.findAll();
+        const result = await LineItem.findAll({
+            where: {
+                isArchived: false,
+            }
+        });
 
         res.status(200).json(result);
     } catch (err) {
@@ -24,6 +28,7 @@ router.get('/campaign/:id', async function(req, res, next) {
         const result = await LineItem.findAll({
             where: {
                 campaignId: id,
+                isArchived: false,
             }
         });
 

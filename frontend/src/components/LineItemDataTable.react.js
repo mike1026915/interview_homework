@@ -187,6 +187,14 @@ const EnhancedTableToolbar = (props) => {
                 >
                     Toggle reviewed
                 </Button>
+                <Button
+                    size="small"
+                    sx={{
+                        whiteSpace: 'nowrap',
+                    }}
+                >
+                    Archive items
+                </Button>
             </ButtonGroup>
         ) : (
             <Tooltip title="Filter">

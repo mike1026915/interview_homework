@@ -1,8 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux'
-
-import { Link } from 'react-router-dom';
+import ExcelJs from "exceljs";
 
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -111,7 +110,8 @@ EnhancedTableHead.propTypes = {
 const EnhancedTableToolbar = (props) => {
     const {
         numSelected,
-        onInvoiceCreate,
+        onCsvCreate,
+        onXlsCreate,
         onFilterIconClick,
         filter,
         cleanFilter,
@@ -164,9 +164,18 @@ const EnhancedTableToolbar = (props) => {
                     sx={{
                         whiteSpace: 'nowrap',
                     }}
-                    onClick={onInvoiceCreate}
+                    onClick={onCsvCreate}
                 >
-                    Create Invoices
+                    Export to CSV
+                </Button>
+                <Button
+                    size="small"
+                    sx={{
+                        whiteSpace: 'nowrap',
+                    }}
+                    onClick={onXlsCreate}
+                >
+                    Export to XLS
                 </Button>
             </ButtonGroup>
         ) : (
@@ -184,11 +193,10 @@ const EnhancedTableToolbar = (props) => {
 
 EnhancedTableToolbar.propTypes = {
     numSelected: PropTypes.number.isRequired,
-    onInvoiceCreate: PropTypes.func,
+    onCsvCreate: PropTypes.func,
 };
 
 export default function EnhancedTable({
-    onCreateInvoiceClick,
     selected,
     setSelected,
     onFilterIconClick,
@@ -265,16 +273,63 @@ export default function EnhancedTable({
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
 
-    const handleInvoiceCreate = useCallback(() => {
-        onCreateInvoiceClick()
-    }, [onCreateInvoiceClick]);
+    const handleCsvCreate = useCallback(() => {
+        const selectedSet = new Set(selected);
+        const selectedInvoice = rows.filter((row) => (selectedSet.has(row.id)));
+
+        let data = 'Name,Total,Create Time\n';
+
+        selectedInvoice.forEach((invoice) => {
+            data += `"${invoice.name}","${invoice.total}","${new Date(invoice.createdAt).toLocaleString()}"\n`
+        });
+
+        const fileName = `Invoice_${new Date().getTime()}.csv`;
+        const blob = new Blob([data], {
+            type : "application/octet-stream"
+        });
+        const href = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        document.body.appendChild(link);
+        link.href = href;
+        link.download = fileName;
+        link.click();
+    }, [rows, selected]);
+
+    const handleXlsCreate = useCallback(() => {
+        const selectedSet = new Set(selected);
+        const selectedInvoice = rows.filter((row) => (selectedSet.has(row.id)));
+
+        const data = selectedInvoice.map((invoice) => {
+            return [invoice.name, invoice.total, new Date(invoice.createdAt).toLocaleString()]
+        })
+        const workbook = new ExcelJs.Workbook();
+        const sheet = workbook.addWorksheet('sheet');
+
+        sheet.addTable({
+            name: 'table1',
+            ref: 'A1',
+            columns: [{ name: 'Name'}, {name: 'Total'}, {name: 'Create Time'}],
+            rows: data,
+        });
+
+        workbook.xlsx.writeBuffer().then((content) => {
+            const link = document.createElement("a");
+            const blobData = new Blob([content], {
+                type: "application/vnd.ms-excel;charset=utf-8;"
+            });
+            link.download = `Invoice_${new Date().getTime()}.xlsx`;
+            link.href = URL.createObjectURL(blobData);
+            link.click();
+        });
+    }, [rows, selected]);
 
     return (
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 2 }}>
                 <EnhancedTableToolbar
                     numSelected={selected.length}
-                    onInvoiceCreate={handleInvoiceCreate}
+                    onCsvCreate={handleCsvCreate}
+                    onXlsCreate={handleXlsCreate}
                     onFilterIconClick={onFilterIconClick}
                     filter={filter}
                     cleanFilter={cleanFilter}
@@ -325,14 +380,7 @@ export default function EnhancedTable({
                                         scope="row"
                                         padding="none"
                                     >
-                                        <Tooltip title="Click to view line-items" arrow>
-                                            <Link
-                                                to={`/line-items//campaign/${row.id}`}
-                                            >
-                                                {row.name}
-                                            </Link>
-                                        </Tooltip>
-
+                                        {row.name}
                                     </TableCell>
                                     <TableCell align="left">{row.total * usdToCurrentCurrencyRate}</TableCell>
                                     <TableCell align="left">{new Date(row.createdAt).toLocaleString()}</TableCell>
