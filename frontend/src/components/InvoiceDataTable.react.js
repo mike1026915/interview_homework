@@ -111,7 +111,6 @@ const EnhancedTableToolbar = (props) => {
     const {
         numSelected,
         onCsvCreate,
-        onXlsCreate,
         onFilterIconClick,
         filter,
         cleanFilter,
@@ -167,15 +166,6 @@ const EnhancedTableToolbar = (props) => {
                     onClick={onCsvCreate}
                 >
                     Export to CSV
-                </Button>
-                <Button
-                    size="small"
-                    sx={{
-                        whiteSpace: 'nowrap',
-                    }}
-                    onClick={onXlsCreate}
-                >
-                    Export to XLS
                 </Button>
             </ButtonGroup>
         ) : (
@@ -295,41 +285,12 @@ export default function EnhancedTable({
         link.click();
     }, [rows, selected]);
 
-    const handleXlsCreate = useCallback(() => {
-        const selectedSet = new Set(selected);
-        const selectedInvoice = rows.filter((row) => (selectedSet.has(row.id)));
-
-        const data = selectedInvoice.map((invoice) => {
-            return [invoice.name, invoice.total, new Date(invoice.createdAt).toLocaleString()]
-        })
-        const workbook = new ExcelJs.Workbook();
-        const sheet = workbook.addWorksheet('sheet');
-
-        sheet.addTable({
-            name: 'table1',
-            ref: 'A1',
-            columns: [{ name: 'Name'}, {name: 'Total'}, {name: 'Create Time'}],
-            rows: data,
-        });
-
-        workbook.xlsx.writeBuffer().then((content) => {
-            const link = document.createElement("a");
-            const blobData = new Blob([content], {
-                type: "application/vnd.ms-excel;charset=utf-8;"
-            });
-            link.download = `Invoice_${new Date().getTime()}.xlsx`;
-            link.href = URL.createObjectURL(blobData);
-            link.click();
-        });
-    }, [rows, selected]);
-
     return (
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 2 }}>
                 <EnhancedTableToolbar
                     numSelected={selected.length}
                     onCsvCreate={handleCsvCreate}
-                    onXlsCreate={handleXlsCreate}
                     onFilterIconClick={onFilterIconClick}
                     filter={filter}
                     cleanFilter={cleanFilter}
