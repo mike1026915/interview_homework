@@ -43,10 +43,10 @@ const headCells = [
         label: 'Total',
     },
     {
-        id: 'createdAt',
+        id: 'updatedAt',
         numeric: false,
         disablePadding: false,
-        label: 'Create Time',
+        label: 'Update Time',
     },
 ];
 
@@ -264,10 +264,10 @@ export default function EnhancedTable({
         const selectedSet = new Set(selected);
         const selectedInvoice = rows.filter((row) => (selectedSet.has(row.id)));
 
-        let data = 'Name,Total,Create Time\n';
+        let data = 'Name,Total,Update Time\n';
 
         selectedInvoice.forEach((invoice) => {
-            data += `"${invoice.name}","${invoice.total}","${new Date(invoice.createdAt).toLocaleString()}"\n`
+            data += `"${invoice.name}","${invoice.total}","${new Date(invoice.updatedAt).toLocaleString()}"\n`
         });
 
         const fileName = `Invoice_${new Date().getTime()}.csv`;
@@ -341,7 +341,7 @@ export default function EnhancedTable({
                                         {row.name}
                                     </TableCell>
                                     <TableCell align="left">{row.total * usdToCurrentCurrencyRate}</TableCell>
-                                    <TableCell align="left">{new Date(row.createdAt).toLocaleString()}</TableCell>
+                                    <TableCell align="left">{new Date(row.updatedAt).toLocaleString()}</TableCell>
                                 </TableRow>
                             );
                         })}
@@ -363,6 +363,7 @@ export default function EnhancedTable({
                                 display: 'flex',
                                 justifyContent: 'center',
                                 alignItems: 'center',
+                                marginTop: '15px',
                             }}
                         >
                             <CircularProgress />

@@ -10,7 +10,7 @@ import ConfirmDialog from '../ConfirmDialog.react';
 import FilterDialog from '../FilterDialog.react';
 
 import { fetchCampaigns } from '../../features/campaignSlice';
-import { createInvoices } from '../../features/invoiceSlice';
+import { createInvoices, showInvoiceCreateSnackbar } from '../../features/invoiceSlice';
 
 const CampaignPage = () => {
     const dispatch = useDispatch()
@@ -37,6 +37,7 @@ const CampaignPage = () => {
         setIsConfirmDialogOpen(false);
 
         dispatch(createInvoices(selected)).then(() => {
+            dispatch(showInvoiceCreateSnackbar());
             navigate('/invoices')
         })
     }, [dispatch, selected, navigate]);

@@ -542,6 +542,7 @@ export default function EnhancedTable({
                                 display: 'flex',
                                 justifyContent: 'center',
                                 alignItems: 'center',
+                                marginTop: '15px',
                             }}
                         >
                             <CircularProgress />

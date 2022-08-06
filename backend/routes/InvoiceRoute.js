@@ -63,7 +63,11 @@ router.post('/', async function(req, res, next) {
 
         try {
             await Promise.all([
-                Invoice.bulkCreate(invoices, {transaction: t}),
+                Invoice.bulkCreate(invoices, {
+                    updateOnDuplicate: ['campaignId', 'total', 'name', 'updatedAt'],
+                    transaction: t
+                }
+                ),
                 Campaign.update({
                     isInvoiceCreated: true,
                 }, {

@@ -1,9 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import {
-    getCurrencyRate as getCurrencyRateAction
+    getCurrencyRate as getCurrencyRateApi
 } from '../apis/currencyApi';
 
-export const getCurrencyRate = createAsyncThunk('app/getCurrencyRate', getCurrencyRateAction);
+export const getCurrencyRate = createAsyncThunk('app/getCurrencyRate', getCurrencyRateApi);
 export const appSlice = createSlice({
     name: 'app',
     initialState: {

@@ -7,13 +7,20 @@ import {
 export const createInvoices = createAsyncThunk('invoice/createInvoices', createInvoicesApi);
 export const getInvoices = createAsyncThunk('invoice/getInvoices', getInvoiceApi);
 
-export const lineItemSlice = createSlice({
+export const invoiceSlice = createSlice({
     name: 'invoice',
     initialState: {
         invoiceLookup: [],
         isInvoicesLoading: false,
+        showInvoiceCreateSnackbar: false,
     },
     reducers: {
+        showInvoiceCreateSnackbar: (state) => {
+            state.showInvoiceCreateSnackbar = true;
+        },
+        closeInvoiceCreateSnackbar: (state) => {
+            state.showInvoiceCreateSnackbar = false;
+        }
     },
     extraReducers: {
         [getInvoices.pending]: (state, action) => {
@@ -34,7 +41,10 @@ export const lineItemSlice = createSlice({
             }, {});
             state.isInvoicesLoading = false;
         },
+        [createInvoices.fulfilled]: (state, action) => {
+            state.isFromInvoiceCreate = true;
+        },
     }
 });
-
-export default lineItemSlice.reducer
+export const { showInvoiceCreateSnackbar, closeInvoiceCreateSnackbar } = invoiceSlice.actions
+export default invoiceSlice.reducer

@@ -351,6 +351,7 @@ export default function CampaignTable({
                                 display: 'flex',
                                 justifyContent: 'center',
                                 alignItems: 'center',
+                                marginTop: '15px',
                             }}
                         >
                             <CircularProgress />

@@ -13,6 +13,7 @@ module.exports = function(sequelize, DataTypes) {
         campaignId: {
             allowNull: false,
             type: DataTypes.BIGINT,
+            unique: true,
         },
         total: {
             allowNull: false,

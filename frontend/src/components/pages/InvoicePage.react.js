@@ -1,17 +1,22 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
+
+import Snackbar from '@mui/material/Snackbar';
 
 import Header from '../Header.react';
 import InvoiceDataTable from '../InvoiceDataTable.react';
 import FilterDialog from '../FilterDialog.react';
 
-import { getInvoices } from '../../features/invoiceSlice';
+import { getInvoices, closeInvoiceCreateSnackbar } from '../../features/invoiceSlice';
+
 
 const InvoicePage = () => {
     const dispatch = useDispatch()
     const [selected, setSelected] = useState([]);
     const [isFilterDialogOpened, setIsFilterDialogOpened] = useState(false);
     const [filter, setFilter] = useState('');
+
+    const showInvoiceCreateSnackbar = useSelector((state) => (state.invoice.showInvoiceCreateSnackbar));
 
     useEffect(() => {
         dispatch(getInvoices());
@@ -38,6 +43,10 @@ const InvoicePage = () => {
         setFilter('');
     }, []);
 
+    const handleInvoiceCreateSnackbarClose = useCallback(() => {
+        dispatch(closeInvoiceCreateSnackbar())
+    }, [dispatch]);
+
     return (
         <>
             <Header />
@@ -54,6 +63,12 @@ const InvoicePage = () => {
                 onFilterSet={handleFilterSet}
                 dialogTitle="Invoice Filter"
                 dialogContent="Enter invoice name keyword"
+            />
+            <Snackbar
+                open={showInvoiceCreateSnackbar}
+                autoHideDuration={3000}
+                onClose={handleInvoiceCreateSnackbarClose}
+                message="Invoices created"
             />
         </>
     )

@@ -2,18 +2,18 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import {
     getLineItems,
     getLineItemsByCampaignId,
-    updateAdjustment as updateAdjustmentAction,
-    setItemReviewed as setItemReviewedAction,
-    getItemComment as getItemCommentAction,
-    updateItemComment as updateItemCommentAction,
+    updateAdjustment as updateAdjustmentApi,
+    setItemReviewed as setItemReviewedApi,
+    getItemComment as getItemCommentApi,
+    updateItemComment as updateItemCommentApi,
 } from '../apis/lineItemApi';
 
 export const fetchLineItems = createAsyncThunk('lineItem/getLineItems', getLineItems);
 export const fetchLineItemsByCampaignId = createAsyncThunk('lineItem/getLineItemsByCampaignId', getLineItemsByCampaignId);
-export const updateAdjustment = createAsyncThunk('lineItem/updateAdjustment', updateAdjustmentAction);
-export const setItemReviewed = createAsyncThunk('lineItem/setItemReviewed', setItemReviewedAction);
-export const getItemComment = createAsyncThunk('lineItem/getItemComment', getItemCommentAction);
-export const updateItemComment = createAsyncThunk('lineItem/updateItemComment', updateItemCommentAction);
+export const updateAdjustment = createAsyncThunk('lineItem/updateAdjustment', updateAdjustmentApi);
+export const setItemReviewed = createAsyncThunk('lineItem/setItemReviewed', setItemReviewedApi);
+export const getItemComment = createAsyncThunk('lineItem/getItemComment', getItemCommentApi);
+export const updateItemComment = createAsyncThunk('lineItem/updateItemComment', updateItemCommentApi);
 
 export const lineItemSlice = createSlice({
     name: 'lineItem',
