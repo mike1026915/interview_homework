@@ -30,7 +30,7 @@ router.post('/', async function(req, res, next) {
             campaignIds
         } = req.body;
 
-        const [lineItems, campaigns] = await Promise.all([
+        const [lineItems, campaigns, invoices] = await Promise.all([
             LineItem.findAll({
                 where: {
                     campaignId: {
@@ -45,29 +45,45 @@ router.post('/', async function(req, res, next) {
                     }
                 }
             }),
+            Invoice.findAll({
+                attributes: ['campaignId'],
+            }),
         ]);
+
+
+        // Note: Sqlite in heroku doesn't support upsert
+        const campaignIdExistSet = new Set(invoices.map(invoice => invoice.get('campaignId')));
 
         const campaignItemsLookup = R.groupBy((lineItems) => {
             return lineItems.campaignId;
         }, lineItems);
 
-        const invoices = campaigns.map((campaign) => {
+        const invoicesToUpdate = campaigns.map((campaign) => {
             return {
-                campaignId: [campaign.id],
-                name: [campaign.name],
+                campaignId: campaign.id,
+                name: campaign.name,
                 total: R.sum(R.map((item) => (item.actualAmount + item.adjustment), campaignItemsLookup[campaign.id])),
             };
         });
+
+        const invoiceNotCreated = invoicesToUpdate.filter((invoice) => (!campaignIdExistSet.has(invoice.campaignId)))
+        const invoiceCreated = invoicesToUpdate.filter((invoice) => (campaignIdExistSet.has(invoice.campaignId)))
 
         const t = await sequelize.transaction();
 
         try {
             await Promise.all([
-                Invoice.bulkCreate(invoices, {
-                    updateOnDuplicate: ['campaignId', 'total', 'name', 'updatedAt'],
+                Invoice.bulkCreate(invoiceNotCreated, {
                     transaction: t
-                }
-                ),
+                }),
+                ...invoiceCreated.map((invoice) => {
+                    return Invoice.update(invoice, {
+                        where: {
+                            campaignId: invoice.campaignId,
+                        },
+                        transaction: t
+                    })
+                }),
                 Campaign.update({
                     isInvoiceCreated: true,
                 }, {
