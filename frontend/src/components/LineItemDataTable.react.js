@@ -325,6 +325,23 @@ export default function EnhancedTable({
         };
     }
 
+    const createHandleAdjustmentEnter = (id) => {
+        return (event) => {
+            if (event.key === 'Enter') {
+                const newAdjustmentEditLookup = {
+                    ...adjustmentEditLookup,
+                    [id]: !adjustmentEditLookup[id],
+                }
+
+                event.stopPropagation();
+
+                setAdjustmentEditLookup(newAdjustmentEditLookup);
+
+                dispatch(updateAdjustment({ id, adjustment: adjustmentValueLookup[id] }));
+            }
+        };
+    }
+
     const createHandleAdjustmentChange = (id) => {
         return (event) => {
             const value = Number(event.target.value);
@@ -480,6 +497,7 @@ export default function EnhancedTable({
                                                         size="small"
                                                         onChange={createHandleAdjustmentChange(row.id)}
                                                         onClick={handleTextFieldClick}
+                                                        onKeyDown={createHandleAdjustmentEnter(row.id)}
                                                     />
                                                     <Tooltip title="Click to save" arrow>
                                                         <IconButton
