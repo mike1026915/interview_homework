@@ -25,6 +25,10 @@ module.exports = function(sequelize, DataTypes) {
             allowNull: false,
             type: DataTypes.BIGINT,
         },
+        comment: {
+            allowNull: true,
+            type: DataTypes.STRING,
+        },
         isReviewed: {
             defaultValue: false,
             type: DataTypes.BOOLEAN,

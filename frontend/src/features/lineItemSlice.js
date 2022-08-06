@@ -4,12 +4,16 @@ import {
     getLineItemsByCampaignId,
     updateAdjustment as updateAdjustmentAction,
     setItemReviewed as setItemReviewedAction,
+    getItemComment as getItemCommentAction,
+    updateItemComment as updateItemCommentAction,
 } from '../apis/lineItemApi';
 
 export const fetchLineItems = createAsyncThunk('lineItem/getLineItems', getLineItems);
 export const fetchLineItemsByCampaignId = createAsyncThunk('lineItem/getLineItemsByCampaignId', getLineItemsByCampaignId);
 export const updateAdjustment = createAsyncThunk('lineItem/updateAdjustment', updateAdjustmentAction);
 export const setItemReviewed = createAsyncThunk('lineItem/setItemReviewed', setItemReviewedAction);
+export const getItemComment = createAsyncThunk('lineItem/getItemComment', getItemCommentAction);
+export const updateItemComment = createAsyncThunk('lineItem/updateItemComment', updateItemCommentAction);
 
 export const lineItemSlice = createSlice({
     name: 'lineItem',
@@ -47,6 +51,13 @@ export const lineItemSlice = createSlice({
                     item.isReviewed = !item.isReviewed
                 };
             })
+        },
+        [updateItemComment.fulfilled]: (state, action) => {
+            const { id, comment } = action.meta?.arg
+
+            state.items.find((item) => {
+                return item.id === id
+            }).comment = comment;
         },
     }
 });

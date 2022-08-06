@@ -29,3 +29,17 @@ export const setItemReviewed = async (ids) => {
 
     return response.data;
 }
+
+export const getItemComment = async (id) => {
+    const response = await axios.get(`${URL_HOST}/line-items/${id}/comment`);
+
+    return response.data;
+}
+
+export const updateItemComment = async ({id, comment}) => {
+    await axios.post(`${URL_HOST}/line-items/${id}/comment`, {
+        text: comment,
+    });
+
+    return;
+}

@@ -2,7 +2,6 @@ const { Sequelize, DataTypes } = require('sequelize');
 
 const {
     Campaign,
-    Comment,
     Invoice,
     LineItem
 } = require('../models');
@@ -10,7 +9,6 @@ const {
 // Create table is not existing
 Promise.all([
     Campaign.sync(),
-    Comment.sync(),
     Invoice.sync(),
     LineItem.sync(),
 ]).then(() => {

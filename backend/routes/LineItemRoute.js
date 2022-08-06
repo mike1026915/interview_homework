@@ -40,6 +40,43 @@ router.get('/campaign/:id', async function(req, res, next) {
     }
 });
 
+router.get('/:id/comment', async function(req, res, next) {
+    try {
+        const id = req.params.id;
+        const result = await LineItem.findAll({
+            where: {
+                id
+            }
+        });
+
+        res.status(200).json(result);
+    } catch (err) {
+        console.error(err);
+
+        next(err);
+    }
+});
+
+router.post('/:id/comment', async function(req, res, next) {
+    try {
+        const id = req.params.id;
+        const { text } = req.body
+        const [result, _] = await LineItem.update({
+            comment: text
+        },{
+            where: {
+                id,
+            }
+        });
+
+        res.status(200).json(result);
+    } catch (err) {
+        console.error(err);
+
+        next(err);
+    }
+});
+
 router.put('/reviewed', async function(req, res, next) {
     try {
         const {

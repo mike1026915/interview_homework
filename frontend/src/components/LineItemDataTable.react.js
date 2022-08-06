@@ -26,6 +26,8 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import EditOffIcon from '@mui/icons-material/EditOff';
 import DoneIcon from '@mui/icons-material/Done';
+import CommentIcon from '@mui/icons-material/Comment';
+import CommentsDisabledIcon from '@mui/icons-material/CommentsDisabled';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
 import Chip from '@mui/material/Chip';
@@ -187,14 +189,6 @@ const EnhancedTableToolbar = (props) => {
                 >
                     Toggle reviewed
                 </Button>
-                <Button
-                    size="small"
-                    sx={{
-                        whiteSpace: 'nowrap',
-                    }}
-                >
-                    Archive items
-                </Button>
             </ButtonGroup>
         ) : (
             <Tooltip title="Filter">
@@ -219,6 +213,7 @@ export default function EnhancedTable({
     onFilterIconClick,
     filter,
     cleanFilter,
+    onCommentIconClick,
 }) {
     const dispatch = useDispatch()
     const [order, setOrder] = useState('asc');
@@ -361,6 +356,14 @@ export default function EnhancedTable({
         setShowToggleReviewedSnackbar(false);
     }, []);
 
+    const createHandleCommentIconClick = (id) => {
+        return (event) => {
+            event.stopPropagation();
+
+            onCommentIconClick(id);
+        };
+    }
+
     const isSelected = (id) => selected.indexOf(id) !== -1;
 
         // Avoid a layout jump when reaching the last page with empty rows.
@@ -434,14 +437,26 @@ export default function EnhancedTable({
                                             {row.name}
                                             {row.isReviewed ? (
                                                 <Tooltip title="reviewed">
-                                                    <EditOffIcon
+                                                    <CommentsDisabledIcon
                                                         sx={{
                                                             width: '1rem',
                                                             opacity: '0.3'
                                                         }}
                                                     />
                                                 </Tooltip>
-                                            ) : null}
+                                            ) : (
+                                                <Tooltip title="Leave comment">
+                                                    <IconButton
+                                                        onClick={createHandleCommentIconClick(row.id)}
+                                                    >
+                                                        <CommentIcon
+                                                            sx={{
+                                                                width: '1rem',
+                                                            }}
+                                                        />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            )}
                                         </Box>
                                     </TableCell>
                                     <TableCell align="left">{row.bookedAmount * usdToCurrentCurrencyRate}</TableCell>
@@ -483,13 +498,22 @@ export default function EnhancedTable({
                                                         <IconButton
                                                             onClick={createHandleAdjustmentClick(row.id, row.adjustment * usdToCurrentCurrencyRate)}
                                                         >
-                                                            <ModeEditIcon
-                                                                disabled={!isUsd || row.isReviewed}
-                                                                sx={{
-                                                                    width: '1rem',
-                                                                    opacity: (isUsd && !row.isReviewed) ? 1 : 0.3,
-                                                                }}
-                                                            />
+                                                            {(isUsd && !row.isReviewed) ? (
+                                                                <ModeEditIcon
+                                                                    disabled={!isUsd || row.isReviewed}
+                                                                    sx={{
+                                                                        width: '1rem',
+                                                                    }}
+                                                                />
+                                                            ) : (
+                                                                <EditOffIcon
+                                                                    disabled={!isUsd || row.isReviewed}
+                                                                    sx={{
+                                                                        width: '1rem',
+                                                                        opacity: '0.3',
+                                                                    }}
+                                                                />
+                                                            )}
                                                         </IconButton>
                                                     </Tooltip>
                                                 </>
