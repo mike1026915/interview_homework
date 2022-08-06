@@ -329,6 +329,10 @@ export default function EnhancedTable({
         return (event) => {
             const value = Number(event.target.value);
 
+            if (isNaN(value)) {
+                return;
+            }
+
             const newAdjustmentValueLookup = {
                 ...adjustmentValueLookup,
                 [id]: value,
