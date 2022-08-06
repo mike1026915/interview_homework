@@ -20,6 +20,7 @@ router.get('/', async function(req, res, next) {
                     id: campaign.id,
                     name: campaign.name,
                     total: R.sum(R.map((item) => (item.actualAmount + item.adjustment), campaignItemsLookup[campaign.id])),
+                    isInvoiceCreated: campaign.isInvoiceCreated,
                 };
             })
 

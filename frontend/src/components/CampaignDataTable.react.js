@@ -26,6 +26,7 @@ import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import CircularProgress from '@mui/material/CircularProgress';
+import DomainVerificationIcon from '@mui/icons-material/DomainVerification';
 import Chip from '@mui/material/Chip';
 import { visuallyHidden } from '@mui/utils';
 
@@ -164,7 +165,7 @@ const EnhancedTableToolbar = (props) => {
                 </Button>
             </ButtonGroup>
         ) : (
-            <Tooltip title="Filter">
+            <Tooltip title="Filter" arrow>
                 <IconButton
                     onClick={onFilterIconClick}
                 >
@@ -319,14 +320,32 @@ export default function CampaignTable({
                                         scope="row"
                                         padding="none"
                                     >
-                                        <Tooltip title="Click to view line-items" arrow>
-                                            <Link
-                                                to={`/line-items/campaign/${row.id}`}
-                                            >
-                                                {row.name}
-                                            </Link>
-                                        </Tooltip>
-
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '0.5rem'
+                                            }}
+                                        >
+                                            <Tooltip title="Click to view line-items" arrow>
+                                                <Link
+                                                    to={`/line-items/campaign/${row.id}`}
+                                                >
+                                                    {row.name}
+                                                </Link>
+                                            </Tooltip>
+                                            {
+                                                row.isInvoiceCreated ? (
+                                                    <Tooltip title="Invoice created. Re-created to update" arrow>
+                                                        <DomainVerificationIcon
+                                                            sx={{
+                                                                width: '1rem',
+                                                            }}
+                                                        />
+                                                    </Tooltip>
+                                                ) : null
+                                            }
+                                        </Box>
                                     </TableCell>
                                     <TableCell align="left">{row.total * usdToCurrentCurrencyRate}</TableCell>
                                 </TableRow>

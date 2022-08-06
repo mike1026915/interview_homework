@@ -191,7 +191,7 @@ const EnhancedTableToolbar = (props) => {
                 </Button>
             </ButtonGroup>
         ) : (
-            <Tooltip title="Filter">
+            <Tooltip title="Filter" arrow>
                 <IconButton
                     onClick={onFilterIconClick}
                 >
@@ -436,7 +436,7 @@ export default function EnhancedTable({
                                         >
                                             {row.name}
                                             {row.isReviewed ? (
-                                                <Tooltip title="reviewed">
+                                                <Tooltip title="reviewed" arrow>
                                                     <CommentsDisabledIcon
                                                         sx={{
                                                             width: '1rem',
@@ -445,7 +445,7 @@ export default function EnhancedTable({
                                                     />
                                                 </Tooltip>
                                             ) : (
-                                                <Tooltip title="Leave comment">
+                                                <Tooltip title="Leave comment" arrow>
                                                     <IconButton
                                                         onClick={createHandleCommentIconClick(row.id)}
                                                     >
@@ -477,7 +477,7 @@ export default function EnhancedTable({
                                                         onChange={createHandleAdjustmentChange(row.id)}
                                                         onClick={handleTextFieldClick}
                                                     />
-                                                    <Tooltip title="Click to save">
+                                                    <Tooltip title="Click to save" arrow>
                                                         <IconButton
                                                             onClick={createHandleAdjustmentSaveClick(row.id)}
                                                         >
@@ -492,7 +492,7 @@ export default function EnhancedTable({
                                             ) : (
                                                 <>
                                                     <span>{row.adjustment * usdToCurrentCurrencyRate}</span>
-                                                    <Tooltip title={(isUsd && !row.isReviewed) ? 'Click to edit' : (
+                                                    <Tooltip arrow title={(isUsd && !row.isReviewed) ? 'Click to edit' : (
                                                         row.isReviewed ? 'Reviewed item is not editable' : 'Editable only when currency is USD'
                                                     )}>
                                                         <IconButton
