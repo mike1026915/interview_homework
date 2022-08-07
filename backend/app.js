@@ -14,7 +14,14 @@ const InvoiceRoute = require('./routes/InvoiceRoute');
 const app = express();
 
 app.use(logger('dev'));
-app.use(helmet());
+app.use(
+    helmet.contentSecurityPolicy({
+        directives: {
+          ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+          'connect-src': ['\'self\'', '\'https://v6.exchangerate-api.com/\''],
+        },
+    })
+);
 app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
