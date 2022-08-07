@@ -7,7 +7,7 @@ https://pleacement-io-interview.herokuapp.com/
 
 # Technical stack
 * The backend uses Node.js/Express.js framework with Sqlite as Database. Sequelize is ORM
-* The frontend uses React.js with Redux
+* The frontend uses React.js with Redux. UI is powered by Material UI
 
 # Set up preparation
 1. Install Node.js & NPM (Please refer to [official document](https://nodejs.org/en/) for installation)
@@ -38,7 +38,7 @@ Would you like to run the app on another port instead? › (Y/n)
 
 # App usage introduction
 We have campaign page, line-item page and invoice page to list all campaigns, line-items and invoices.
-* In campaign page, we show all campaigns in a table and with pagination. You can sort the table by name or by total.
+* In campaign page, we show all campaigns in a table with pagination. You can sort the table by name or by total.
 Select any campaign and click the top-right "CREATE INVOICE" button to create invoices. You can see an icon next to name to indicate the campaign's invoice has been created.
 ![campaign page](./image/campaign-page.png "Campaign page")
 ![campaign page create invoice](./image/campaign-page-create-invoice.png  "Campaign page Create invoice")
@@ -51,7 +51,6 @@ Select any campaign and click the top-right "CREATE INVOICE" button to create in
 * Clicking the comment icon in the named column can leave/update comment to the item
 * Reviewed items is neither editable nor leaving comment.
 ![reviewed](./image/reviewed.png "Reviewed items")
-
 
 * Click "Invoice" on top bar can go to invoice page to view generated invoices. it is also a table with pagination and can be sort based on any column.
 ![invoice page](./image/invoice-page.png "Invoice page")
@@ -66,9 +65,8 @@ Select any campaign and click the top-right "CREATE INVOICE" button to create in
 ![Filter](./image/filter.png "Filter")
 
 # Completed use cases
-
 * The user should be able browse through the line-item data as either a list or table (ie. pagination or infinite-scrolling)
-    * You can click a campaign to view all line-items under a campaign
+    * You can click on a campaign name to view all line-items under the campaign
 * The user should be able to edit line-item "adjustments".
     * You can click the pen icon next to adjustment to edit the line-item adjustment in line-item page
 * The user should be able to see each line-item's billable amount (sub- total = actuals + adjustments).
@@ -80,3 +78,18 @@ Select any campaign and click the top-right "CREATE INVOICE" button to create in
 * The user should be able to sort the data.
     * In each table, use can sort the data based on each column
 * The user should be able to browse/filter/sort the invoice history, as well.
+    * we can see these in invoice page. Can browse/filter/sort
+* The user should be able to output the invoice to *.CSV, *.XLS, etc.
+    * In invoice page, Select the invoices, we can click the top-right "EXPORT TO CSV" button to dump data as a CSV file
+* The user should be able flag individual line-items as "reviewed" (meaning they are disabled from further editing).
+    * In line-items page, we can click the top-right "TOGGLE REVIEWED" button to mark the items as reviewed. Reviewed item cannot edit the adjustment and cannot leave comment
+* The user should be able to add comments on an individual line-item.
+    * Clicking the comment icon in the named column can leave/update comment to the item
+
+
+# Database note
+If you want to recreate the database, go to backend folder and execute:
+```bash
+node script/initDb.js
+```
+It can create the database from scratch including building schema and inserting data
