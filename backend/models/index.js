@@ -28,7 +28,11 @@ Campaign.hasMany(LineItem, {
 Invoice.belongsTo(Campaign, {
     foreignKey: 'campaignId',
     sourceKey: 'id',
-})
+});
+Campaign.hasOne(Invoice, {
+    foreignKey: 'campaignId',
+    sourceKey: 'id',
+});
 
 module.exports = {
     Campaign,

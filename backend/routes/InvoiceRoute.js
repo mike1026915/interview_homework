@@ -30,20 +30,14 @@ router.post('/', async function(req, res, next) {
             campaignIds
         } = req.body;
 
-        const [lineItems, campaigns, invoices] = await Promise.all([
-            LineItem.findAll({
-                where: {
-                    campaignId: {
-                        [Op.in]: campaignIds,
-                    }
-                }
-            }),
+        const [campaigns, invoices] = await Promise.all([
             Campaign.findAll({
                 where: {
                     id: {
                         [Op.in]: campaignIds,
                     }
-                }
+                },
+                include: LineItem,
             }),
             Invoice.findAll({
                 attributes: ['campaignId'],
@@ -51,18 +45,17 @@ router.post('/', async function(req, res, next) {
         ]);
 
 
-        // Note: Sqlite in heroku doesn't support upsert
+        // Note: Sqlite in heroku doesn't support upsert so we have to implement the upsert
         const campaignIdExistSet = new Set(invoices.map(invoice => invoice.get('campaignId')));
 
-        const campaignItemsLookup = R.groupBy((lineItems) => {
-            return lineItems.campaignId;
-        }, lineItems);
-
         const invoicesToUpdate = campaigns.map((campaign) => {
+            console.log({
+                campaign,
+            })
             return {
                 campaignId: campaign.id,
                 name: campaign.name,
-                total: R.sum(R.map((item) => (item.actualAmount + item.adjustment), campaignItemsLookup[campaign.id])),
+                total: R.sum(R.map((item) => (item['actualAmount'] + item['adjustment']), campaign['LineItems'])),
             };
         });
 
