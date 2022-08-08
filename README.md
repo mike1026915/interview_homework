@@ -6,8 +6,8 @@ This is Mike Fang's interview homework for Replacement.io.
 https://pleacement-io-interview.herokuapp.com/
 
 # Technical stack
-* The backend uses Node.js/Express.js framework with Sqlite as Database. Sequelize is ORM.
-* The frontend uses React.js with Redux. UI is powered by Material UI.
+* The backend is using Node.js/Express.js framework with Sqlite as Database. Sequelize is ORM.
+* The frontend is using React.js with Redux. UI library is using  Material UI.
 
 # Set up preparation
 1. Install Node.js & NPM. (Please refer to [official document](https://nodejs.org/en/) for installation)
