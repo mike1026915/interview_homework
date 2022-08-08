@@ -1,4 +1,5 @@
 import React from 'react';
+
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -17,13 +18,12 @@ export default function AlertDialog({
 }) {
 
     return (
-        <div>
-            <Dialog
-                open={isOpen}
-                onClose={onClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
+        <Dialog
+            open={isOpen}
+            onClose={onClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
             <DialogTitle id="alert-dialog-title">
                 {title}
             </DialogTitle>
@@ -38,7 +38,6 @@ export default function AlertDialog({
                     {primaryButtonText}
                 </Button>
             </DialogActions>
-            </Dialog>
-        </div>
+        </Dialog>
     );
 }

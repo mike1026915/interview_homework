@@ -9,7 +9,6 @@ import FilterDialog from '../FilterDialog.react';
 
 import { getInvoices, closeInvoiceCreateSnackbar } from '../../features/invoiceSlice';
 
-
 const InvoicePage = () => {
     const dispatch = useDispatch()
     const [selected, setSelected] = useState([]);

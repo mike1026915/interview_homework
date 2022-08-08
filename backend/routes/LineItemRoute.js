@@ -6,6 +6,7 @@ const {
 
 const router = express.Router();
 
+// Get all line-item
 router.get('/', async function(req, res, next) {
     try {
         const result = await LineItem.findAll({
@@ -22,6 +23,7 @@ router.get('/', async function(req, res, next) {
     }
 });
 
+// Get line-items under given a campaign ID
 router.get('/campaign/:id', async function(req, res, next) {
     try {
         const id = req.params.id;
@@ -40,6 +42,7 @@ router.get('/campaign/:id', async function(req, res, next) {
     }
 });
 
+// Get line-items under given a list of campaign IDs
 router.post('/campaign', async function(req, res, next) {
     try {
         const { ids } = req.body;
@@ -60,6 +63,7 @@ router.post('/campaign', async function(req, res, next) {
     }
 });
 
+// Get the comment of line-item
 router.get('/:id/comment', async function(req, res, next) {
     try {
         const id = req.params.id;
@@ -77,6 +81,7 @@ router.get('/:id/comment', async function(req, res, next) {
     }
 });
 
+// Update the comment of line-item
 router.post('/:id/comment', async function(req, res, next) {
     try {
         const id = req.params.id;
@@ -97,6 +102,7 @@ router.post('/:id/comment', async function(req, res, next) {
     }
 });
 
+// Mark the item as reviewed
 router.put('/reviewed', async function(req, res, next) {
     try {
         const {
@@ -123,6 +129,7 @@ router.put('/reviewed', async function(req, res, next) {
     }
 });
 
+// Update the adjustment
 router.put('/:id', async function(req, res, next) {
     try {
         const id = req.params.id;

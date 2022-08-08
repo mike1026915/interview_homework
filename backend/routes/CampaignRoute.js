@@ -7,6 +7,7 @@ const {
 
 const router = express.Router();
 
+// Get all campaigns
 router.get('/', async function(req, res, next) {
     try {
         const campaigns = await Campaign.findAll({
@@ -31,6 +32,7 @@ router.get('/', async function(req, res, next) {
     }
 });
 
+// Get campaign by ID
 router.get('/:id', async function(req, res, next) {
     try {
         const id = req.params.id;

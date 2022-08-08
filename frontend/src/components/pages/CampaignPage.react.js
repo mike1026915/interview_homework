@@ -24,7 +24,6 @@ const CampaignPage = () => {
         dispatch(fetchCampaigns());
     }, [dispatch])
 
-
     const handleConfirmDialogOpen = useCallback(() => {
         setIsConfirmDialogOpen(true);
     }, []);

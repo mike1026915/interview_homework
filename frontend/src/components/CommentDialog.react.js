@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
+
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -44,17 +45,17 @@ export default function CommentDialog({
         >
             <DialogTitle>{`Update Comment for ${item?.name}`}</DialogTitle>
             <DialogContent>
-            <TextareaAutosize
-                minRows="15"
-                autoFocus
-                id="name"
-                label="name"
-                variant="standard"
-                placeholder="Comment..."
-                defaultValue={comment}
-                style={{width: '100%'}}
-                ref={ref}
-            />
+                <TextareaAutosize
+                    minRows="15"
+                    autoFocus
+                    id="name"
+                    label="name"
+                    variant="standard"
+                    placeholder="Comment..."
+                    defaultValue={comment}
+                    style={{width: '100%'}}
+                    ref={ref}
+                />
             </DialogContent>
             <DialogActions>
                 <Button onClick={onDialogClose}>Cancel</Button>

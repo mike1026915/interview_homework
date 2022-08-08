@@ -11,6 +11,7 @@ const {
 
 const router = express.Router();
 
+// Get all invoices result
 router.get('/', async function(req, res, next) {
     try {
         const result = await Invoice.findAll();
@@ -23,7 +24,7 @@ router.get('/', async function(req, res, next) {
     }
 });
 
-
+// Create invoices
 router.post('/', async function(req, res, next) {
     try {
         const {

@@ -27,32 +27,30 @@ export default function FilterDialog({
     }, [onFilterSet, value]);
 
     return (
-        <div>
         <Dialog
             open={open}
             onClose={onDialogClose}
         >
             <DialogTitle>{dialogTitle}</DialogTitle>
             <DialogContent>
-            <DialogContentText>
-                {dialogContent}
-            </DialogContentText>
-            <TextField
-                autoFocus
-                margin="dense"
-                id="name"
-                label="name"
-                fullWidth
-                variant="standard"
-                value={value}
-                onChange={handleChange}
-            />
+                <DialogContentText>
+                    {dialogContent}
+                </DialogContentText>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="name"
+                    label="name"
+                    fullWidth
+                    variant="standard"
+                    value={value}
+                    onChange={handleChange}
+                />
             </DialogContent>
             <DialogActions>
                 <Button onClick={onDialogClose}>Cancel</Button>
                 <Button onClick={handleFilterClick}>Filter</Button>
             </DialogActions>
         </Dialog>
-        </div>
     );
 }
