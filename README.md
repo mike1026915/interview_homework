@@ -58,10 +58,10 @@ Select any campaign and click the top-right "CREATE INVOICE" button to create in
 * Select then click the top-right "EXPORT TO CSV" button to dump data to a CSV file.
 ![invoice page](./image/invoice-selected.png "Invoice page")
 
-* On the right of app bar, we can select the currency, we only support USD/EUR for now. Adjustment is not editable when currency setting is EUR.
+* On the right of app bar, we can select the currency. It only support USD/EUR for now. Adjustment is not editable when currency setting is EUR.
 ![Header right](./image/header-right.png "Header right")
 
-* Below the currency, there is a filter icon, we can filter the data by name. We can use filter in campaign, line-item and invoice table.
+* Below the currency, there is a filter icon. Clicking it can filter the data by name. We can use filter in campaign, line-item and invoice page.
 ![Filter](./image/filter.png "Filter")
 
 # Completed use cases
