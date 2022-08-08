@@ -40,6 +40,26 @@ router.get('/campaign/:id', async function(req, res, next) {
     }
 });
 
+router.post('/campaign', async function(req, res, next) {
+    try {
+        const { ids } = req.body;
+        const result = await LineItem.findAll({
+            where: {
+                campaignId:  {
+                    [Op.in]: ids,
+                },
+                isArchived: false,
+            }
+        });
+
+        res.status(200).json(result);
+    } catch (err) {
+        console.error(err);
+
+        next(err);
+    }
+});
+
 router.get('/:id/comment', async function(req, res, next) {
     try {
         const id = req.params.id;

@@ -14,6 +14,14 @@ export const getLineItemsByCampaignId = async (campaignId) => {
     return response.data;
 }
 
+export const getLineItemsByCampaignIds = async (ids) => {
+    const response = await axios.post(`${URL_HOST}/line-items/campaign`, {
+        ids,
+    });
+
+    return response.data;
+}
+
 export const updateAdjustment = async ({id, adjustment}) => {
     const response = await axios.put(`${URL_HOST}/line-items/${id}`, {
         adjustment

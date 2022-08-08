@@ -30,6 +30,8 @@ import { visuallyHidden } from '@mui/utils';
 
 import { getComparator, stableSort} from '../utility';
 
+import { getLineItemsByCampaignIds } from '../apis/lineItemApi';
+
 const headCells = [
     {
         id: 'name',
@@ -261,14 +263,26 @@ export default function EnhancedTable({
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-    const handleCsvCreate = useCallback(() => {
+    const handleCsvCreate = useCallback(async () => {
         const selectedSet = new Set(selected);
         const selectedInvoice = rows.filter((row) => (selectedSet.has(row.id)));
+        const campaignIds = selectedInvoice.map((invoice) => (invoice.campaignId));
 
-        let data = 'Name,Total,Update Time\n';
+        const lineItems = await getLineItemsByCampaignIds(campaignIds);
+        const campaignItemLookup = lineItems.reduce((lookup, lineItem) => {
+            if(lookup[lineItem.campaignId]) {
+                lookup[lineItem.campaignId].push(lineItem.name);
+            } else {
+                lookup[lineItem.campaignId] = [lineItem.name];
+            }
+
+            return lookup;
+        }, {})
+
+        let data = 'Name,Total,Update Time, Items\n';
 
         selectedInvoice.forEach((invoice) => {
-            data += `"${invoice.name}","${invoice.total}","${new Date(invoice.updatedAt).toLocaleString()}"\n`
+            data += `"${invoice.name}","${invoice.total}","${new Date(invoice.updatedAt).toLocaleString()}","${campaignItemLookup[invoice.campaignId].join(';')}"\n`
         });
 
         const fileName = `Invoice_${new Date().getTime()}.csv`;
