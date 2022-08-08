@@ -9,17 +9,16 @@ const router = express.Router();
 
 router.get('/', async function(req, res, next) {
     try {
-        const [campaigns, lineItems] = await Promise.all([Campaign.findAll(), LineItem.findAll()]);
-        const campaignItemsLookup = R.groupBy((lineItems) => {
-            return lineItems.campaignId;
-        }, lineItems);
+        const campaigns = await Campaign.findAll({
+            include: LineItem
+        });
 
         const result = campaigns
             .map((campaign) => {
                 return {
                     id: campaign.id,
                     name: campaign.name,
-                    total: R.sum(R.map((item) => (item.actualAmount + item.adjustment), campaignItemsLookup[campaign.id])),
+                    total: R.sum(R.map((item) => (item['actualAmount'] + item['adjustment']), campaign['LineItems'])),
                     isInvoiceCreated: campaign.isInvoiceCreated,
                 };
             })

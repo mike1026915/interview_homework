@@ -21,6 +21,10 @@ LineItem.belongsTo(Campaign, {
     foreignKey: 'campaignId',
     sourceKey: 'id',
 });
+Campaign.hasMany(LineItem, {
+    foreignKey: 'campaignId',
+    sourceKey: 'id',
+});
 Invoice.belongsTo(Campaign, {
     foreignKey: 'campaignId',
     sourceKey: 'id',
