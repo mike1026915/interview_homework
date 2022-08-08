@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom';
 
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -338,7 +339,11 @@ export default function EnhancedTable({
                                         scope="row"
                                         padding="none"
                                     >
-                                        {row.name}
+                                        <Link
+                                            to={`/line-items/campaign/${row.campaignId}`}
+                                        >
+                                            {row.name}
+                                        </Link>
                                     </TableCell>
                                     <TableCell align="left">{row.total * usdToCurrentCurrencyRate}</TableCell>
                                     <TableCell align="left">{new Date(row.updatedAt).toLocaleString()}</TableCell>

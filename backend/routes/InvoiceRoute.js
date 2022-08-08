@@ -44,10 +44,6 @@ router.post('/', async function(req, res, next) {
             }),
         ]);
 
-
-        // Note: Sqlite in heroku doesn't support upsert so we have to implement the upsert
-        const campaignIdExistSet = new Set(invoices.map(invoice => invoice.get('campaignId')));
-
         const invoicesToUpdate = campaigns.map((campaign) => {
             console.log({
                 campaign,
@@ -59,6 +55,8 @@ router.post('/', async function(req, res, next) {
             };
         });
 
+        // Note: Sqlite in heroku doesn't support upsert so we have to implement the upsert
+        const campaignIdExistSet = new Set(invoices.map(invoice => invoice.get('campaignId')));
         const invoiceNotCreated = invoicesToUpdate.filter((invoice) => (!campaignIdExistSet.has(invoice.campaignId)))
         const invoiceCreated = invoicesToUpdate.filter((invoice) => (campaignIdExistSet.has(invoice.campaignId)))
 
