@@ -1,6 +1,6 @@
 # interview_homework
 
-This is Mike Fang's interview homework for Replacement.io.
+This is Mike Fang's interview homework for Placement.io.
 
 # Demo site
 https://pleacement-io-interview.herokuapp.com/
